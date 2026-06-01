@@ -715,81 +715,131 @@ function restoreJSON(input){
   const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);const restored=d.db||d;if(!restored.entries||!restored.academies){toast('올바른 백업 파일이 아닙니다');return}if(!confirm('현재 데이터를 덮어씁니다. 계속할까요?'))return;db=restored;save();renderAll();toast('복원 완료')}catch{toast('파일을 읽을 수 없습니다')}input.value=''};r.readAsText(file);
 }
 
-/* ── 구글 시트 동기화 ── */
+/* ── 구글 시트 동기화 (완전 재작성 — 이중저장/누락 완전 차단) ── */
 function saveGsUrl(){
   const url=document.getElementById('gs-url').value.trim();
   db.gsUrl=url;save();setConn(!!url);
   toast(url?'연동 저장 완료 — 아래 전체 동기화를 눌러주세요':'연동 해제됨',3000);
 }
+
+// 서버에서 데이터 가져오기
 async function pullFromSheet(){
   if(!db.gsUrl)return null;
-  try{const res=await fetch(db.gsUrl+'?action=getAll&t='+Date.now());const data=await res.json();return data.status==='ok'?data:null}catch(e){return null}
+  try{
+    const res=await fetch(db.gsUrl+'?action=getAll&t='+Date.now(),{cache:'no-store'});
+    if(!res.ok)return null;
+    const data=await res.json();
+    return data.status==='ok'?data:null;
+  }catch(e){return null}
 }
-async function pushToSheet(){
+
+// 서버에 데이터 올리기 (항상 전체 덮어쓰기)
+async function pushToSheet(entries, academies){
   if(!db.gsUrl)return false;
-  try{const res=await fetch(db.gsUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'syncAll',db:{academies:db.academies,entries:db.entries}})});const data=await res.json();return data.status==='ok'}catch(e){return false}
+  try{
+    const res=await fetch(db.gsUrl,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'syncAll',db:{academies,entries}})
+    });
+    const data=await res.json();
+    return data.status==='ok';
+  }catch(e){return false}
 }
-function mergeEntries(local,remote){
-  // id 기준 완벽 중복 제거 — 같은 id는 ts가 최신인 것만 유지
+
+// id 기준 완전 중복 제거 병합
+function mergeEntries(a, b){
   const map=new Map();
-  [...local,...remote].forEach(e=>{
-    if(!e||!e.id)return; // id 없는 항목 제외
-    const ex=map.get(String(e.id));
-    if(!ex||(Number(e.ts)||0)>(Number(ex.ts)||0))map.set(String(e.id),e);
+  [...(a||[]),...(b||[])].forEach(e=>{
+    if(!e||!e.id)return;
+    const key=String(e.id).trim();
+    if(!key)return;
+    const ex=map.get(key);
+    // 같은 id: ts(타임스탬프)가 더 최신인 것만 유지
+    if(!ex||(Number(e.ts)||0)>=(Number(ex.ts)||0)){
+      map.set(key,e);
+    }
   });
   return Array.from(map.values()).sort((a,b)=>(Number(a.ts)||0)-(Number(b.ts)||0));
 }
-function mergeAcademies(local,remote){
+
+function mergeAcademies(a, b){
   const map=new Map();
-  [...local,...remote].forEach(a=>{if(a&&a.id)map.set(String(a.id),a)});
+  [...(a||[]),...(b||[])].forEach(x=>{
+    if(x&&x.id)map.set(String(x.id).trim(),x);
+  });
   return Array.from(map.values());
 }
+
+// 입력/수정/삭제 후 백그라운드 자동 저장 (병합 없이 현재 로컬 상태만 push)
 async function autoSync(){
   if(!db.gsUrl)return;
   try{
-    // 항상 전체 덮어쓰기 — 부분 추가 방식 사용 안 함 (이중저장 원천 차단)
-    const res=await fetch(db.gsUrl,{method:'POST',headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action:'syncAll',db:{academies:db.academies,entries:db.entries}})});
-    const data=await res.json();
-    if(data.status==='ok')setConn(true);
+    const ok=await pushToSheet(db.entries, db.academies);
+    if(ok)setConn(true);
   }catch(e){console.warn('autoSync fail',e)}
 }
+
+// 헤더 동기화 버튼: pull → 병합 → push 순서로 양방향 동기화
 async function syncNow(){
   if(!db.gsUrl){toast('설정 탭에서 구글 시트 URL을 먼저 입력하세요',3000);return}
   setSyncLabel('동기화 중...');
   try{
-    // 1) 서버에서 최신 데이터 가져오기
     const remote=await pullFromSheet();
-    if(remote){
-      const beforeCnt=db.entries.length;
-      // 2) id 기준으로 중복 없이 병합
-      db.entries=mergeEntries(db.entries,remote.entries||[]);
-      db.academies=mergeAcademies(db.academies,remote.academies||[]);
-      // 3) 병합된 최종본을 서버에 덮어쓰기 (이중저장 완전 방지)
-      await pushToSheet();
+    if(!remote){
+      toast('서버 응답 없음',3000);setConn(false);setSyncLabel('동기화');return;
+    }
+    const localBefore=db.entries.length;
+    // 병합 (id 기준 중복 완전 제거)
+    const merged=mergeEntries(db.entries, remote.entries||[]);
+    const mergedAc=mergeAcademies(db.academies, remote.academies||[]);
+    // 병합 결과를 서버에 덮어쓰기
+    const ok=await pushToSheet(merged, mergedAc);
+    if(ok){
+      db.entries=merged;
+      db.academies=mergedAc;
       save();renderAll();
-      const added=db.entries.length-beforeCnt;
+      const added=db.entries.length-localBefore;
       toast('동기화 완료 — 총 '+db.entries.length+'건'+(added>0?' (+'+added+'건)':''));
       setConn(true);
-    }else{toast('서버 응답 없음 — URL과 배포 설정을 확인하세요',3000);setConn(false)}
-  }catch(e){toast('동기화 실패: '+e.message,3000);setConn(false)}
+    }else{
+      toast('서버 저장 실패 — 다시 시도하세요',3000);
+    }
+  }catch(e){toast('오류: '+e.message,3000);setConn(false)}
   setSyncLabel('동기화');
 }
+
+// 설정탭 전체 동기화 버튼
 async function fullSync(){
   if(!db.gsUrl){toast('URL을 먼저 입력하고 연동 저장을 눌러주세요',3000);return}
-  const prog=document.getElementById('sync-progress');prog.style.display='block';prog.textContent='구글 시트에서 데이터 불러오는 중...';
+  const prog=document.getElementById('sync-progress');
+  prog.style.display='block';
+  prog.textContent='⏳ 1/3 서버에서 데이터 가져오는 중...';
   try{
     const remote=await pullFromSheet();
-    if(remote){
-      const before=db.entries.length;
-      db.entries=mergeEntries(db.entries,remote.entries||[]);
-      db.academies=mergeAcademies(db.academies,remote.academies||[]);
-      prog.textContent='구글 시트에 업로드 중...';
-      const ok=await pushToSheet();save();renderAll();
-      prog.textContent=ok?'완료! 총 '+db.entries.length+'건 (추가 '+(db.entries.length-before)+'건)':'업로드 실패 — 잠시 후 다시 시도';
-      setConn(ok);if(ok)toast('전체 동기화 완료!');
-    }else{prog.textContent='서버 응답 없음 — URL과 배포 권한을 확인하세요';setConn(false)}
-  }catch(e){prog.textContent='오류: '+e.message;setConn(false)}
+    if(!remote){
+      prog.textContent='❌ 서버 응답 없음 — URL과 배포 권한을 확인하세요';
+      setConn(false);return;
+    }
+    prog.textContent='⏳ 2/3 중복 없이 데이터 병합 중...';
+    const localBefore=db.entries.length;
+    const merged=mergeEntries(db.entries, remote.entries||[]);
+    const mergedAc=mergeAcademies(db.academies, remote.academies||[]);
+    const added=merged.length-localBefore;
+    prog.textContent='⏳ 3/3 병합 결과 서버에 저장 중...';
+    const ok=await pushToSheet(merged, mergedAc);
+    if(ok){
+      db.entries=merged;
+      db.academies=mergedAc;
+      save();renderAll();
+      prog.textContent='✅ 완료! 총 '+db.entries.length+'건'+(added>0?' (새로 추가 '+added+'건)':'');
+      setConn(true);toast('전체 동기화 완료!');
+    }else{
+      prog.textContent='⚠️ 서버 저장 실패 — 잠시 후 다시 시도하세요';
+    }
+  }catch(e){
+    prog.textContent='❌ 오류: '+e.message;setConn(false);
+  }
 }
 
 /* ── 전체 렌더 ── */
@@ -815,10 +865,13 @@ function init(){
     pullFromSheet().then(async remote=>{
       if(remote){
         const before=db.entries.length;
-        db.entries=mergeEntries(db.entries,remote.entries||[]);
-        db.academies=mergeAcademies(db.academies,remote.academies||[]);
-        // 병합 결과를 서버에도 반영 (양방향 완전 동기화)
-        if(db.entries.length!==before)await pushToSheet();
+        const merged=mergeEntries(db.entries, remote.entries||[]);
+        const mergedAc=mergeAcademies(db.academies, remote.academies||[]);
+        // 로컬과 서버 데이터가 다를 때만 push (불필요한 덮어쓰기 방지)
+        const changed=(merged.length!==before);
+        db.entries=merged;
+        db.academies=mergedAc;
+        if(changed)await pushToSheet(db.entries, db.academies);
         save();renderAll();setConn(true);
         toast('최신 데이터 불러옴',1500);
       }
