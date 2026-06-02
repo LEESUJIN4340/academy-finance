@@ -23,7 +23,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 .header-sub{font-size:11px;opacity:.7;margin-top:1px}
 .sync-btn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:inherit}
 .sync-btn:active{opacity:.7}
-.conn-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.conn-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
 .conn-dot.on{background:#5DCAA5}.conn-dot.off{background:#F09595}
 .tabbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:0.5px solid var(--border);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
 .tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 6px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:10px;font-family:inherit}
@@ -43,7 +43,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 .pbar input{flex:1;min-width:0;font-size:13px;padding:8px 10px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;color:var(--text);font-family:inherit}
 .pbar span{color:var(--text3);font-size:13px;flex-shrink:0}
 .pbar button,.qbtn{padding:8px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500}
-.stitle{font-size:12px;font-weight:600;color:var(--text2);margin:14px 0 6px;padding-left:2px;letter-spacing:.5px}
+.stitle{font-size:12px;font-weight:600;color:var(--text2);margin:14px 0 6px;padding-left:2px;letter-spacing:.3px}
 .field{margin-bottom:11px}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
 input[type=text],input[type=number],input[type=month],input[type=date],select{width:100%;font-size:15px;padding:11px 13px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;color:var(--text);font-family:inherit;appearance:none;-webkit-appearance:none}
@@ -110,9 +110,9 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
 .modal{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto}
 .modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
 .modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text3);line-height:1;padding:0}
-.modal-row{display:flex;gap:8px}
-.modal-row .field{flex:1}
-.sync-info{font-size:11px;color:var(--text3);text-align:center;padding:4px;margin-bottom:6px}
+.modal-row{display:flex;gap:8px}.modal-row .field{flex:1}
+.prog-box{background:var(--gray-light);border-radius:var(--radius-sm);padding:12px;font-size:13px;margin-top:8px;display:none;line-height:1.7}
+.warn-box{background:#FFF8E1;border:0.5px solid #F9A825;border-radius:var(--radius-sm);padding:12px;font-size:12px;margin-bottom:10px;color:#5D4037;line-height:1.7}
 @media(min-width:600px){body{max-width:480px;margin:0 auto}.tabbar{max-width:480px;left:50%;transform:translateX(-50%)}}
 </style>
 </head>
@@ -122,7 +122,10 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
   <div>
     <div style="display:flex;align-items:center;gap:8px">
       <h1>생각키움연구소</h1>
-      <span style="font-size:11px;opacity:.85"><span class="conn-dot off" id="conn-dot"></span><span id="conn-txt">로컬저장</span></span>
+      <span style="font-size:11px;opacity:.85;display:flex;align-items:center">
+        <span class="conn-dot off" id="conn-dot"></span>
+        <span id="conn-txt">로컬저장</span>
+      </span>
     </div>
     <div class="header-sub">학원 재정 통합 관리</div>
   </div>
@@ -137,9 +140,7 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
 <!-- 홈 -->
 <div id="s-home" class="screen on">
   <div class="pbar">
-    <input type="month" id="pf">
-    <span>~</span>
-    <input type="month" id="pt">
+    <input type="month" id="pf"><span>~</span><input type="month" id="pt">
     <button onclick="calcDash()">조회</button>
   </div>
   <div class="net-box">
@@ -184,12 +185,12 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
     </div>
     <div id="g-rent" style="display:none">
       <div class="field"><label>연월</label><input type="month" id="i-month-rent"></div>
-      <div class="field"><label>항목명 (예: 1월 월세)</label><input type="text" id="i-rent-name" placeholder="입력" lang="ko" inputmode="text"></div>
+      <div class="field"><label>항목명</label><input type="text" id="i-rent-name" placeholder="예: 1월 월세" lang="ko" inputmode="text"></div>
       <div class="field"><label>금액</label><input type="number" id="i-rent-amt" placeholder="0" inputmode="numeric"></div>
     </div>
     <div id="g-mgmt" style="display:none">
       <div class="field"><label>연월</label><input type="month" id="i-month-mgmt"></div>
-      <div class="field"><label>항목명 (예: 관리비, 전기세)</label><input type="text" id="i-mgmt-name" placeholder="입력" lang="ko" inputmode="text"></div>
+      <div class="field"><label>항목명</label><input type="text" id="i-mgmt-name" placeholder="예: 관리비, 전기세" lang="ko" inputmode="text"></div>
       <div class="field"><label>금액</label><input type="number" id="i-mgmt-amt" placeholder="0" inputmode="numeric"></div>
     </div>
     <div id="g-bk" style="display:none">
@@ -213,14 +214,14 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
     <input type="month" id="hf"><span>~</span><input type="month" id="ht">
     <button onclick="renderHistory()">조회</button>
   </div>
-  <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-    <button class="qbtn" style="font-size:12px;padding:7px 10px;background:#fff;color:var(--text);border:0.5px solid var(--border)" onclick="filterHistory('')">전체</button>
-    <button class="qbtn" style="font-size:12px;padding:7px 10px;background:var(--green-light);color:var(--green);border:none" onclick="filterHistory('inc')">수입</button>
-    <button class="qbtn" style="font-size:12px;padding:7px 10px;background:var(--amber-light);color:var(--amber);border:none" onclick="filterHistory('sal')">급여</button>
-    <button class="qbtn" style="font-size:12px;padding:7px 10px;background:var(--red-light);color:var(--red);border:none" onclick="filterHistory('rent')">월세</button>
-    <button class="qbtn" style="font-size:12px;padding:7px 10px;background:var(--amber-light);color:var(--amber);border:none" onclick="filterHistory('mgmt')">관리비</button>
-    <button class="qbtn" style="font-size:12px;padding:7px 10px;background:var(--purple-light);color:var(--purple);border:none" onclick="filterHistory('bk')">기장비</button>
-    <button class="qbtn" style="font-size:12px;padding:7px 10px;background:var(--blue-light);color:var(--blue);border:none" onclick="filterHistory('tax')">세금</button>
+  <div style="display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap">
+    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:#fff;color:var(--text);border:0.5px solid var(--border)" onclick="filterHistory('')">전체</button>
+    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--green-light);color:var(--green);border:none" onclick="filterHistory('inc')">수입</button>
+    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--amber-light);color:var(--amber);border:none" onclick="filterHistory('sal')">급여</button>
+    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--red-light);color:var(--red);border:none" onclick="filterHistory('rent')">월세</button>
+    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--amber-light);color:var(--amber);border:none" onclick="filterHistory('mgmt')">관리비</button>
+    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--purple-light);color:var(--purple);border:none" onclick="filterHistory('bk')">기장비</button>
+    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--blue-light);color:var(--blue);border:none" onclick="filterHistory('tax')">세금</button>
   </div>
   <div id="history-list"></div>
 </div>
@@ -235,7 +236,7 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
   <div id="byac-content"></div>
 </div>
 
-<!-- 저장·설정 -->
+<!-- 설정 -->
 <div id="s-dl" class="screen">
   <div class="card">
     <div class="stitle" style="margin-top:0">기간 선택 후 다운로드</div>
@@ -248,29 +249,44 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
       <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>전체 백업 (JSON)
     </button>
     <button class="dl-btn" onclick="document.getElementById('restore-file').click()">
-      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3" transform="rotate(180 12 12)"/></svg>백업 복원
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3" transform="rotate(180 12 12)"/></svg>백업 복원 (JSON)
     </button>
     <input type="file" id="restore-file" accept=".json" style="display:none" onchange="restoreJSON(this)">
   </div>
 
   <div class="card">
     <div class="stitle" style="margin-top:0">구글 시트 연동 — 기기 간 공유</div>
+    <div class="warn-box">
+      ⚠️ <b>동기화 방식 안내</b><br>
+      • 구글 시트 = 모든 기기의 기준 데이터<br>
+      • <b>동기화 버튼</b>: 구글 시트에서 최신 데이터 불러오기<br>
+      • 입력/수정/삭제 즉시 구글 시트에 자동 저장<br>
+      • 여러 기기 사용 시: 한 기기에서 입력 후 다른 기기에서 동기화 버튼 클릭
+    </div>
     <div class="gs-box">
-      <div class="gs-title">자동 동기화 설정 방법</div>
+      <div class="gs-title">설정 방법</div>
       <div class="gs-desc">
-        1. 구글 스프레드시트 열기 → 확장 프로그램 → Apps Script<br>
+        1. 구글 스프레드시트 → 확장 프로그램 → Apps Script<br>
         2. 코드 붙여넣기 → 저장 → 배포 → 새 배포<br>
-        3. 유형: 웹앱 / 액세스: 모든 사용자 / 배포<br>
-        4. 배포 URL을 아래에 입력 → 연동 저장<br>
-        5. 지금 전체 동기화 클릭
+        3. 유형: 웹앱 / 액세스: 모든 사용자 → 배포<br>
+        4. URL 아래에 입력 → 연동 저장
       </div>
     </div>
     <div class="field"><label>Google Apps Script URL</label>
       <input type="text" id="gs-url" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:12px">
     </div>
     <button class="save-btn" style="background:var(--green)" onclick="saveGsUrl()">연동 저장</button>
-    <button class="save-btn" style="background:var(--blue);margin-top:8px" onclick="fullSync()">지금 전체 동기화 (데이터 합치기)</button>
-    <div id="sync-progress" style="font-size:12px;color:var(--text2);text-align:center;padding:8px 0;display:none"></div>
+    <div class="prog-box" id="sync-progress"></div>
+  </div>
+
+  <div class="card">
+    <div class="stitle" style="margin-top:0">구글 시트 초기화</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.7">
+      데이터가 꼬였을 때 사용하세요.<br>
+      현재 이 기기의 데이터를 구글 시트에 완전히 덮어씁니다.
+    </div>
+    <button class="save-btn" style="background:var(--red)" onclick="forceOverwrite()">이 기기 데이터로 구글 시트 초기화</button>
+    <div class="prog-box" id="overwrite-progress"></div>
   </div>
 
   <div class="card">
@@ -297,7 +313,7 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>학원별
   </button>
   <button class="tb" onclick="go('dl',this)">
-    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>설정
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>설정
   </button>
 </div>
 
@@ -347,7 +363,7 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
         <div class="field"><label>연월</label><input type="month" id="e-month-bk"></div>
         <div class="field"><label>학원</label><select id="e-ac-bk"></select></div>
       </div>
-      <div class="field"><label>세무사명 / 항목</label><input type="text" id="e-bk-name" lang="ko" inputmode="text"></div>
+      <div class="field"><label>세무사명/항목</label><input type="text" id="e-bk-name" lang="ko" inputmode="text"></div>
       <div class="field"><label>금액</label><input type="number" id="e-bk-amt" inputmode="numeric"></div>
     </div>
     <div id="edit-g-tax" style="display:none">
@@ -362,20 +378,29 @@ input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 
 </div>
 
 <script>
-const LKEY='acmgr_v5';
+'use strict';
+const LKEY='acmgr_v6';
 let db={academies:[],entries:[],gsUrl:''};
 let curType='inc';
 let histFilter='';
 let byacAcId='all';
 let editId=null;
 let idb=null;
+let isSyncing=false; // 동기화 중복 실행 방지
 
-/* ── 저장 (월별 분할) ── */
+/* ══════════════════════════════════════
+   저장 / 로드 — 월별 분할 저장
+══════════════════════════════════════ */
 function save(){
   try{
-    localStorage.setItem(LKEY+'_meta',JSON.stringify({academies:db.academies,gsUrl:db.gsUrl||'',v:5}));
+    localStorage.setItem(LKEY+'_meta',JSON.stringify({
+      academies:db.academies,gsUrl:db.gsUrl||'',v:6,savedAt:Date.now()
+    }));
     const byM={};
-    db.entries.forEach(e=>{const k=e.month||'0000-00';(byM[k]=byM[k]||[]).push(e)});
+    db.entries.forEach(e=>{
+      const k=(e.month||'0000-00').slice(0,7);
+      (byM[k]=byM[k]||[]).push(e);
+    });
     Object.keys(localStorage).filter(k=>k.startsWith(LKEY+'_m_')).forEach(k=>localStorage.removeItem(k));
     Object.entries(byM).forEach(([m,arr])=>localStorage.setItem(LKEY+'_m_'+m,JSON.stringify(arr)));
     localStorage.setItem(LKEY+'_idx',JSON.stringify(Object.keys(byM)));
@@ -383,7 +408,6 @@ function save(){
   }catch(e){console.warn('save err',e)}
 }
 
-/* ── 로드 ── */
 function load(){
   try{
     const meta=localStorage.getItem(LKEY+'_meta');
@@ -392,31 +416,40 @@ function load(){
       const m=JSON.parse(meta);
       const ix=JSON.parse(idx);
       let entries=[];
-      ix.forEach(k=>{try{const c=localStorage.getItem(LKEY+'_m_'+k);if(c)entries=entries.concat(JSON.parse(c))}catch(e){}});
+      ix.forEach(k=>{
+        try{const c=localStorage.getItem(LKEY+'_m_'+k);if(c)entries=entries.concat(JSON.parse(c))}catch(e){}
+      });
       db={academies:m.academies||[],entries,gsUrl:m.gsUrl||''};
       return;
     }
     // 구버전 호환
-    const old=localStorage.getItem(LKEY)||localStorage.getItem('acmgr_v4');
-    if(old){try{db=JSON.parse(old);save();return}catch(e){}}
+    for(const key of['acmgr_v5','acmgr_v4','acmgr_v3']){
+      const old=localStorage.getItem(key);
+      if(old){try{db=JSON.parse(old);save();return}catch(e){}}
+    }
   }catch(e){console.warn('load err',e)}
   idbLoad();
 }
 
-/* ── IndexedDB 백업 ── */
 function idbOpen(){return new Promise(res=>{const r=indexedDB.open('acmgr',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('kv');r.onsuccess=e=>{idb=e.target.result;res(idb)};r.onerror=()=>res(null)})}
-async function idbSave(json){if(!idb)await idbOpen();if(!idb)return;idb.transaction('kv','readwrite').objectStore('kv').put(json,'db')}
-async function idbLoad(){if(!idb)await idbOpen();if(!idb)return;const r=idb.transaction('kv','readonly').objectStore('kv').get('db');r.onsuccess=e=>{if(e.target.result){try{db=JSON.parse(e.target.result);renderAll()}catch(er){}}}}
+async function idbSave(json){if(!idb)await idbOpen();if(!idb)return;try{idb.transaction('kv','readwrite').objectStore('kv').put(json,'db')}catch(e){}}
+async function idbLoad(){if(!idb)await idbOpen();if(!idb)return;try{const r=idb.transaction('kv','readonly').objectStore('kv').get('db');r.onsuccess=e=>{if(e.target.result){try{db=JSON.parse(e.target.result);renderAll()}catch(er){}}}}catch(e){}}
 
-/* ── 유틸 ── */
+/* ══════════════════════════════════════
+   유틸
+══════════════════════════════════════ */
 const W=n=>'₩'+Math.round(n||0).toLocaleString('ko-KR');
 const now=()=>new Date().toISOString().slice(0,7);
 const today=()=>new Date().toISOString().slice(0,10);
 function toast(msg,dur=1800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur)}
 function setSyncLabel(t){const el=document.getElementById('sync-label');if(el)el.textContent=t}
 function setConn(on){document.getElementById('conn-dot').className='conn-dot '+(on?'on':'off');document.getElementById('conn-txt').textContent=on?'구글시트연동':'로컬저장'}
+function showProg(elId,msg){const el=document.getElementById(elId);if(el){el.style.display='block';el.textContent=msg}}
+function hideProg(elId,msg,ms=3000){const el=document.getElementById(elId);if(el){el.textContent=msg||'';if(ms>0)setTimeout(()=>{el.style.display='none'},ms)}}
 
-/* ── 탭 ── */
+/* ══════════════════════════════════════
+   탭 전환
+══════════════════════════════════════ */
 function go(name,btn){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
@@ -429,7 +462,6 @@ function go(name,btn){
   if(name==='input')refreshAcSelect();
 }
 
-/* ── 입력 탭 구분 ── */
 function setType(t,btn){
   curType=t;
   document.querySelectorAll('.type-tab').forEach(b=>b.classList.remove('on'));
@@ -438,7 +470,9 @@ function setType(t,btn){
   document.getElementById('f-ac').style.display=t==='tax'?'none':'block';
 }
 
-/* ── 급여 미리보기 ── */
+/* ══════════════════════════════════════
+   급여 미리보기
+══════════════════════════════════════ */
 function calcSal(){
   const amt=parseFloat(document.getElementById('i-sal-amt').value)||0;
   const rate=parseFloat(document.getElementById('i-sal-rate').value)||3.3;
@@ -454,22 +488,46 @@ function calcEditSal(){
   if(amt){p.style.display='block';p.textContent=`공제 ${W(tax)} → 실지급 ${W(amt-tax)}`}else p.style.display='none';
 }
 
-/* ── 학원 셀렉트 갱신 ── */
+/* ══════════════════════════════════════
+   학원 셀렉트
+══════════════════════════════════════ */
 function refreshAcSelect(){
   const sel=document.getElementById('i-ac');
-  sel.innerHTML=db.academies.length?db.academies.map(a=>`<option value="${a.id}">${a.name}</option>`).join(''):'<option value="">먼저 학원을 등록하세요</option>';
+  sel.innerHTML=db.academies.length
+    ?db.academies.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')
+    :'<option value="">먼저 학원을 등록하세요</option>';
 }
 function fillAcSelect(id){
   const sel=document.getElementById(id);
   if(sel)sel.innerHTML=db.academies.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
 }
 
-/* ── 저장 ── */
+/* ══════════════════════════════════════
+   고유 ID 생성
+══════════════════════════════════════ */
+function genId(){
+  const t=Date.now().toString(36);
+  const r=Math.random().toString(36).slice(2,9);
+  const p=(typeof performance!=='undefined'?(performance.now()*1000|0):0).toString(36);
+  return t+'_'+r+'_'+p;
+}
+
+/* ══════════════════════════════════════
+   저장 (로컬 + 구글시트 자동 push)
+══════════════════════════════════════ */
+function saveAndPush(){
+  save();
+  pushToSheet(); // 백그라운드 실행, await 안 함
+}
+
+/* ══════════════════════════════════════
+   입력 저장
+══════════════════════════════════════ */
 function saveEntry(){
   const acId=document.getElementById('i-ac').value;
   const acName=db.academies.find(a=>a.id===acId)?.name||'';
   const type=curType;
-  let entry={id:Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)+'_'+(performance.now()*1000|0).toString(36),type,acId,acName,ts:Date.now()};
+  let entry={id:genId(),type,acId,acName,ts:Date.now()};
 
   if(type==='inc'){
     const month=document.getElementById('i-month-inc').value;
@@ -524,15 +582,18 @@ function saveEntry(){
   }
 
   db.entries.push(entry);
-  save();toast('저장되었습니다');autoSync();
+  saveAndPush();
+  toast('저장되었습니다');
 }
 
-/* ── 대시보드 ── */
+/* ══════════════════════════════════════
+   대시보드
+══════════════════════════════════════ */
 function calcDash(){
   const f=document.getElementById('pf').value;
   const t=document.getElementById('pt').value;
   const ok=e=>(!f||e.month>=f)&&(!t||e.month<=t);
-  const sum=(type)=>db.entries.filter(e=>e.type===type&&ok(e)).reduce((s,e)=>s+e.amount,0);
+  const sum=type=>db.entries.filter(e=>e.type===type&&ok(e)).reduce((s,e)=>s+(Number(e.amount)||0),0);
   const inc=sum('inc'),sal=sum('sal'),rent=sum('rent'),mgmt=sum('mgmt'),bk=sum('bk'),tax=sum('tax');
   const net=inc-sal-rent-mgmt-bk-tax;
   document.getElementById('d-inc').textContent=W(inc);
@@ -545,113 +606,153 @@ function calcDash(){
   const acEl=document.getElementById('d-ac-list');
   if(!db.academies.length){acEl.innerHTML='<div class="empty">학원을 먼저 등록하세요</div>';return}
   acEl.innerHTML=db.academies.map(a=>{
-    const ai=db.entries.filter(e=>e.acId===a.id&&e.type==='inc'&&ok(e)).reduce((s,e)=>s+e.amount,0);
-    const as=db.entries.filter(e=>e.acId===a.id&&e.type==='sal'&&ok(e)).reduce((s,e)=>s+e.amount,0);
-    const ar=db.entries.filter(e=>e.acId===a.id&&e.type==='rent'&&ok(e)).reduce((s,e)=>s+e.amount,0);
-    const am=db.entries.filter(e=>e.acId===a.id&&e.type==='mgmt'&&ok(e)).reduce((s,e)=>s+e.amount,0);
-    const abk=db.entries.filter(e=>e.acId===a.id&&e.type==='bk'&&ok(e)).reduce((s,e)=>s+e.amount,0);
+    const fi=e=>e.acId===a.id&&ok(e);
+    const ai=db.entries.filter(e=>fi(e)&&e.type==='inc').reduce((s,e)=>s+(Number(e.amount)||0),0);
+    const as=db.entries.filter(e=>fi(e)&&e.type==='sal').reduce((s,e)=>s+(Number(e.amount)||0),0);
+    const ar=db.entries.filter(e=>fi(e)&&e.type==='rent').reduce((s,e)=>s+(Number(e.amount)||0),0);
+    const am=db.entries.filter(e=>fi(e)&&e.type==='mgmt').reduce((s,e)=>s+(Number(e.amount)||0),0);
+    const abk=db.entries.filter(e=>fi(e)&&e.type==='bk').reduce((s,e)=>s+(Number(e.amount)||0),0);
     const an=ai-as-ar-am-abk;
     return `<div class="ac-row"><div class="ac-dot"></div><div class="ac-info"><div class="ac-name2">${a.name}</div><div class="ac-nums">수입 ${W(ai)} / 급여 ${W(as)} / 월세 ${W(ar)} / 관리비 ${W(am)} / 기장비 ${W(abk)}</div></div><div class="ac-net" style="color:${an>=0?'var(--green)':'var(--red)'}">${W(an)}</div></div>`;
   }).join('');
 }
 
-/* ── 내역 ── */
+/* ══════════════════════════════════════
+   내역
+══════════════════════════════════════ */
 function filterHistory(t){histFilter=t;renderHistory()}
 function renderHistory(){
   const f=document.getElementById('hf').value,t=document.getElementById('ht').value;
-  let rows=db.entries.filter(e=>(!f||e.month>=f)&&(!t||e.month<=t)&&(!histFilter||e.type===histFilter)).sort((a,b)=>b.ts-a.ts);
+  let rows=db.entries
+    .filter(e=>(!f||e.month>=f)&&(!t||e.month<=t)&&(!histFilter||e.type===histFilter))
+    .sort((a,b)=>b.ts-a.ts);
   const el=document.getElementById('history-list');
   if(!rows.length){el.innerHTML='<div class="empty">내역이 없습니다</div>';return}
   const labels={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금'};
-  const grouped={};rows.forEach(e=>{(grouped[e.month]=grouped[e.month]||[]).push(e)});
+  const grouped={};
+  rows.forEach(e=>{const k=(e.month||'').slice(0,7);(grouped[k]=grouped[k]||[]).push(e)});
   el.innerHTML=Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).map(month=>{
     const items=grouped[month].map(e=>`<div class="li">
-      <div class="li-l"><span class="tag tag-${e.type}">${labels[e.type]||e.type}${e.kind?' · '+e.kind:''}</span>
-      <div class="li-name">${e.acName?e.acName+' · ':''}${e.name}</div>
-      <div class="li-sub">${e.month}${e.type==='sal'?'  실지급 '+W(e.net):''}</div></div>
-      <div class="li-r"><div class="li-amt ${e.type==='inc'?'p':'m'}">${e.type==='inc'?'':'-'}${W(e.amount)}</div>
-      <button class="edit-btn" onclick="openEditModal('${e.id}')" aria-label="수정">✎</button>
-      <button class="del-btn" onclick="delEntry('${e.id}')" aria-label="삭제">×</button></div></div>`).join('');
+      <div class="li-l">
+        <span class="tag tag-${e.type}">${labels[e.type]||e.type}${e.kind?' · '+e.kind:''}</span>
+        <div class="li-name">${e.acName?e.acName+' · ':''}${e.name||''}</div>
+        <div class="li-sub">${e.month||''}${e.type==='sal'?'  실지급 '+W(e.net):''}</div>
+      </div>
+      <div class="li-r">
+        <div class="li-amt ${e.type==='inc'?'p':'m'}">${e.type==='inc'?'':'-'}${W(e.amount)}</div>
+        <button class="edit-btn" onclick="openEditModal('${e.id}')" aria-label="수정">✎</button>
+        <button class="del-btn" onclick="delEntry('${e.id}')" aria-label="삭제">×</button>
+      </div>
+    </div>`).join('');
     return `<div style="font-size:12px;font-weight:600;color:var(--text2);margin:10px 0 4px">${month}</div><div class="card" style="padding:0 14px">${items}</div>`;
   }).join('');
 }
-function delEntry(id){if(!confirm('삭제할까요?'))return;db.entries=db.entries.filter(e=>e.id!==id);save();renderHistory();calcDash();toast('삭제되었습니다');autoSync()}
+function delEntry(id){
+  if(!confirm('삭제할까요?'))return;
+  db.entries=db.entries.filter(e=>e.id!==id);
+  saveAndPush();renderHistory();calcDash();toast('삭제되었습니다');
+}
 
-/* ── 학원별 ── */
+/* ══════════════════════════════════════
+   학원별
+══════════════════════════════════════ */
 function setByacAc(id){byacAcId=id;renderByAc()}
 function toggleAcDetail(id){const el=document.getElementById(id);if(el)el.classList.toggle('open')}
 function renderByAc(){
   const f=document.getElementById('bf').value,t=document.getElementById('bt').value;
   const ok=e=>(!f||e.month>=f)&&(!t||e.month<=t);
   const acs=db.academies;
-  document.getElementById('byac-tabs').innerHTML=`<button class="ac-tab ${byacAcId==='all'?'on':''}" onclick="setByacAc('all')">전체</button>`+acs.map(a=>`<button class="ac-tab ${byacAcId===a.id?'on':''}" onclick="setByacAc('${a.id}')">${a.name}</button>`).join('');
+  document.getElementById('byac-tabs').innerHTML=
+    `<button class="ac-tab ${byacAcId==='all'?'on':''}" onclick="setByacAc('all')">전체</button>`+
+    acs.map(a=>`<button class="ac-tab ${byacAcId===a.id?'on':''}" onclick="setByacAc('${a.id}')">${a.name}</button>`).join('');
   const el=document.getElementById('byac-content');
   if(!acs.length){el.innerHTML='<div class="empty">학원을 먼저 등록하세요</div>';return}
   const labels={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금'};
+  const expTypes=['sal','rent','mgmt','bk'];
+
   if(byacAcId==='all'){
     const rows=db.entries.filter(ok);
-    const totInc=rows.filter(e=>e.type==='inc').reduce((s,e)=>s+e.amount,0);
-    const totExp=['sal','rent','mgmt','bk','tax'].map(t=>rows.filter(e=>e.type===t).reduce((s,e)=>s+e.amount,0)).reduce((a,b)=>a+b,0);
+    const totInc=rows.filter(e=>e.type==='inc').reduce((s,e)=>s+(Number(e.amount)||0),0);
+    const totExp=['sal','rent','mgmt','bk','tax'].reduce((s,tp)=>s+rows.filter(e=>e.type===tp).reduce((ss,e)=>ss+(Number(e.amount)||0),0),0);
     const net=totInc-totExp;
     const cards=acs.map(a=>{
-      const aRows=rows.filter(e=>e.acId===a.id);
-      const ai=aRows.filter(e=>e.type==='inc').reduce((s,e)=>s+e.amount,0);
-      const as=aRows.filter(e=>e.type==='sal').reduce((s,e)=>s+e.amount,0);
-      const ar=aRows.filter(e=>e.type==='rent').reduce((s,e)=>s+e.amount,0);
-      const am=aRows.filter(e=>e.type==='mgmt').reduce((s,e)=>s+e.amount,0);
-      const abk=aRows.filter(e=>e.type==='bk').reduce((s,e)=>s+e.amount,0);
-      const aExp=as+ar+am+abk;const an=ai-aExp;
-      return `<div class="ac-detail-card"><div class="ac-detail-hd" onclick="toggleAcDetail('body-${a.id}')"><span class="ac-detail-name">${a.name}</span><span class="ac-detail-net" style="color:${an>=0?'var(--green)':'var(--red)'}">${W(an)}</span></div>
+      const ar=rows.filter(e=>e.acId===a.id);
+      const ai=ar.filter(e=>e.type==='inc').reduce((s,e)=>s+(Number(e.amount)||0),0);
+      const aExp=expTypes.reduce((s,tp)=>s+ar.filter(e=>e.type===tp).reduce((ss,e)=>ss+(Number(e.amount)||0),0),0);
+      const an=ai-aExp;
+      const detail=expTypes.map(tp=>{
+        const v=ar.filter(e=>e.type===tp).reduce((s,e)=>s+(Number(e.amount)||0),0);
+        return v?`<div class="sub-row"><span>${labels[tp]}</span><span>−${W(v)}</span></div>`:'';
+      }).join('');
+      return `<div class="ac-detail-card">
+        <div class="ac-detail-hd" onclick="toggleAcDetail('body-${a.id}')">
+          <span class="ac-detail-name">${a.name}</span>
+          <span class="ac-detail-net" style="color:${an>=0?'var(--green)':'var(--red)'}">${W(an)}</span>
+        </div>
         <div class="ac-detail-body" id="body-${a.id}">
           <div class="sub-row"><span style="color:var(--green)">수입</span><span style="color:var(--green);font-weight:600">${W(ai)}</span></div>
-          ${as?`<div class="sub-row"><span>급여</span><span>−${W(as)}</span></div>`:''}
-          ${ar?`<div class="sub-row"><span>월세</span><span>−${W(ar)}</span></div>`:''}
-          ${am?`<div class="sub-row"><span>관리비</span><span>−${W(am)}</span></div>`:''}
-          ${abk?`<div class="sub-row"><span>기장비</span><span>−${W(abk)}</span></div>`:''}
-          <div class="sub-row total"><span>지출합계</span><span style="color:var(--red)">−${W(aExp)}</span></div>
+          ${detail}
           <div class="sub-row total" style="border-top:1px solid var(--border)"><span>순이익</span><span style="color:${an>=0?'var(--green)':'var(--red)'}">${W(an)}</span></div>
-        </div></div>`;
+        </div>
+      </div>`;
     }).join('');
     el.innerHTML=`<div class="net-box" style="margin-bottom:10px"><div class="net-lbl">전체 순이익</div><div class="net-val" style="color:${net>=0?'var(--green)':'var(--red)'}">${W(net)}</div></div>
       <div class="sg" style="margin-bottom:10px"><div class="sbox"><div class="lbl">총 수입</div><div class="val g">${W(totInc)}</div></div><div class="sbox"><div class="lbl">총 지출</div><div class="val r">${W(totExp)}</div></div></div>${cards}`;
     return;
   }
-  const ac=acs.find(a=>a.id===byacAcId);if(!ac){el.innerHTML='';return}
+
+  const ac=acs.find(a=>a.id===byacAcId);
+  if(!ac){el.innerHTML='';return}
   const aRows=db.entries.filter(e=>e.acId===ac.id&&ok(e));
   const taxRows=db.entries.filter(e=>e.type==='tax'&&ok(e));
-  const totInc=aRows.filter(e=>e.type==='inc').reduce((s,e)=>s+e.amount,0);
-  const totExp=['sal','rent','mgmt','bk'].map(t=>aRows.filter(e=>e.type===t).reduce((s,e)=>s+e.amount,0)).reduce((a,b)=>a+b,0);
+  const totInc=aRows.filter(e=>e.type==='inc').reduce((s,e)=>s+(Number(e.amount)||0),0);
+  const totExp=expTypes.reduce((s,tp)=>s+aRows.filter(e=>e.type===tp).reduce((ss,e)=>ss+(Number(e.amount)||0),0),0);
   const net=totInc-totExp;
-  const incHtml=aRows.filter(e=>e.type==='inc').sort((a,b)=>b.month.localeCompare(a.month)).map(e=>`<div class="li"><div class="li-l"><div class="li-name">${e.name}</div><div class="li-sub">${e.month}</div></div><div class="li-r"><div class="li-amt p">${W(e.amount)}</div><button class="edit-btn" onclick="openEditModal('${e.id}')">✎</button><button class="del-btn" onclick="delEntryByac('${e.id}')">×</button></div></div>`).join('')||'<div class="empty">내역 없음</div>';
+  const incHtml=aRows.filter(e=>e.type==='inc').sort((a,b)=>b.month.localeCompare(a.month))
+    .map(e=>`<div class="li"><div class="li-l"><div class="li-name">${e.name}</div><div class="li-sub">${e.month}</div></div>
+      <div class="li-r"><div class="li-amt p">${W(e.amount)}</div>
+      <button class="edit-btn" onclick="openEditModal('${e.id}')">✎</button>
+      <button class="del-btn" onclick="delEntryAndRefresh('${e.id}')">×</button></div></div>`).join('')||'<div class="empty">내역 없음</div>';
   let expHtml='';
-  ['sal','rent','mgmt','bk'].forEach(tp=>{
+  expTypes.forEach(tp=>{
     const rows=aRows.filter(e=>e.type===tp).sort((a,b)=>b.month.localeCompare(a.month));
     if(!rows.length)return;
-    const sub=rows.reduce((s,e)=>s+e.amount,0);
+    const sub=rows.reduce((s,e)=>s+(Number(e.amount)||0),0);
     expHtml+=`<div style="font-size:12px;font-weight:600;color:var(--text2);margin:8px 0 4px">${labels[tp]} 합계 ${W(sub)}</div>`;
-    expHtml+=rows.map(e=>`<div class="li"><div class="li-l"><div class="li-name">${e.name}</div><div class="li-sub">${e.month}${tp==='sal'?'  실지급 '+W(e.net):''}</div></div><div class="li-r"><div class="li-amt m">−${W(e.amount)}</div><button class="edit-btn" onclick="openEditModal('${e.id}')">✎</button><button class="del-btn" onclick="delEntryByac('${e.id}')">×</button></div></div>`).join('');
+    expHtml+=rows.map(e=>`<div class="li"><div class="li-l"><div class="li-name">${e.name}</div><div class="li-sub">${e.month}${tp==='sal'?'  실지급 '+W(e.net):''}</div></div>
+      <div class="li-r"><div class="li-amt m">−${W(e.amount)}</div>
+      <button class="edit-btn" onclick="openEditModal('${e.id}')">✎</button>
+      <button class="del-btn" onclick="delEntryAndRefresh('${e.id}')">×</button></div></div>`).join('');
   });
   el.innerHTML=`<div class="net-box" style="margin-bottom:10px"><div class="net-lbl">${ac.name} 순이익</div><div class="net-val" style="color:${net>=0?'var(--green)':'var(--red)'}">${W(net)}</div></div>
     <div class="sg" style="margin-bottom:10px"><div class="sbox"><div class="lbl">수입</div><div class="val g">${W(totInc)}</div></div><div class="sbox"><div class="lbl">지출</div><div class="val r">${W(totExp)}</div></div></div>
     <div style="font-size:13px;font-weight:700;color:var(--green);margin:10px 0 4px">수입 내역</div><div class="card" style="padding:0 14px">${incHtml}</div>
     <div style="font-size:13px;font-weight:700;color:var(--red);margin:10px 0 4px">지출 내역</div><div class="card" style="padding:0 14px">${expHtml||'<div class="empty">내역 없음</div>'}</div>
-    ${taxRows.length?`<div style="font-size:13px;font-weight:700;color:var(--blue);margin:10px 0 4px">세금 납부 (전체 귀속)</div><div class="card" style="padding:0 14px">${taxRows.sort((a,b)=>b.month.localeCompare(a.month)).map(e=>`<div class="li"><div class="li-l"><div class="li-name">${e.kind} ${e.name}</div><div class="li-sub">${e.month}</div></div><div class="li-r"><div class="li-amt m">−${W(e.amount)}</div></div></div>`).join('')}</div>`:''}`;
+    ${taxRows.length?`<div style="font-size:13px;font-weight:700;color:var(--blue);margin:10px 0 4px">세금 납부 (전체 귀속)</div><div class="card" style="padding:0 14px">${taxRows.sort((a,b)=>b.month.localeCompare(a.month)).map(e=>`<div class="li"><div class="li-l"><div class="li-name">${e.kind||''} ${e.name||''}</div><div class="li-sub">${e.month||''}</div></div><div class="li-r"><div class="li-amt m">−${W(e.amount)}</div></div></div>`).join('')}</div>`:''}`;
 }
-function delEntryByac(id){if(!confirm('삭제할까요?'))return;db.entries=db.entries.filter(e=>e.id!==id);save();renderByAc();calcDash();toast('삭제되었습니다');autoSync()}
+function delEntryAndRefresh(id){
+  if(!confirm('삭제할까요?'))return;
+  db.entries=db.entries.filter(e=>e.id!==id);
+  saveAndPush();renderByAc();calcDash();toast('삭제되었습니다');
+}
 
-/* ── 학원 관리 ── */
+/* ══════════════════════════════════════
+   학원 관리
+══════════════════════════════════════ */
 function addAcademy(){
   const name=document.getElementById('ac-name-input').value.trim();
   if(!name){toast('학원 이름을 입력하세요');return}
   if(db.academies.find(a=>a.name===name)){toast('이미 등록된 학원입니다');return}
-  db.academies.push({id:Date.now().toString(36),name});
-  save();document.getElementById('ac-name-input').value='';renderAcChips();refreshAcSelect();toast(name+' 등록 완료');autoSync();
+  db.academies.push({id:genId(),name});
+  saveAndPush();document.getElementById('ac-name-input').value='';
+  renderAcChips();refreshAcSelect();toast(name+' 등록 완료');
 }
 function deleteAcademy(id){
   const ac=db.academies.find(a=>a.id===id);
   if(!confirm((ac?.name||'')+'을 삭제할까요?'))return;
-  db.academies=db.academies.filter(a=>a.id!==id);db.entries=db.entries.filter(e=>e.acId!==id);
-  save();renderAcChips();refreshAcSelect();toast('삭제되었습니다');autoSync();
+  db.academies=db.academies.filter(a=>a.id!==id);
+  db.entries=db.entries.filter(e=>e.acId!==id);
+  saveAndPush();renderAcChips();refreshAcSelect();toast('삭제되었습니다');
 }
 function renderAcChips(){
   const el=document.getElementById('ac-chips');
@@ -659,7 +760,9 @@ function renderAcChips(){
   el.innerHTML=db.academies.map(a=>`<span class="chip">${a.name}<button onclick="deleteAcademy('${a.id}')" aria-label="삭제">×</button></span>`).join('');
 }
 
-/* ── 수정 모달 ── */
+/* ══════════════════════════════════════
+   수정 모달
+══════════════════════════════════════ */
 function openEditModal(id){
   const e=db.entries.find(x=>x.id===id);if(!e)return;
   editId=id;
@@ -679,170 +782,144 @@ function closeModal(e){if(e.target===document.getElementById('edit-modal'))close
 function saveEdit(){
   const idx=db.entries.findIndex(x=>x.id===editId);if(idx<0)return;
   const e=db.entries[idx];const type=e.type;
-  if(type==='inc'){const acId=document.getElementById('e-ac-inc').value;const month=document.getElementById('e-month-inc').value;const name=document.getElementById('e-inc-name').value.trim();const amt=parseFloat(document.getElementById('e-inc-amt').value)||0;if(!month||!name||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name,amount:amt})}
-  else if(type==='sal'){const acId=document.getElementById('e-ac-sal').value;const month=document.getElementById('e-month-sal').value;const name=document.getElementById('e-sal-name').value.trim();const amt=parseFloat(document.getElementById('e-sal-amt').value)||0;const rate=parseFloat(document.getElementById('e-sal-rate').value)||3.3;if(!month||!name||!amt){toast('모두 입력하세요');return}const taxAmt=Math.round(amt*rate/100);Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name,amount:amt,rate,taxAmt,net:amt-taxAmt})}
-  else if(type==='rent'){const acId=document.getElementById('e-ac-rent').value;const month=document.getElementById('e-month-rent').value;const name=document.getElementById('e-rent-name').value.trim();const amt=parseFloat(document.getElementById('e-rent-amt').value)||0;if(!month||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name:name||'월세',amount:amt})}
-  else if(type==='mgmt'){const acId=document.getElementById('e-ac-mgmt').value;const month=document.getElementById('e-month-mgmt').value;const name=document.getElementById('e-mgmt-name').value.trim();const amt=parseFloat(document.getElementById('e-mgmt-amt').value)||0;if(!month||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name:name||'관리비',amount:amt})}
-  else if(type==='bk'){const acId=document.getElementById('e-ac-bk').value;const month=document.getElementById('e-month-bk').value;const name=document.getElementById('e-bk-name').value.trim();const amt=parseFloat(document.getElementById('e-bk-amt').value)||0;if(!month||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name:name||'기장비',amount:amt})}
-  else if(type==='tax'){const date=document.getElementById('e-tax-date').value;const kind=document.getElementById('e-tax-kind').value;const name=document.getElementById('e-tax-name').value.trim();const amt=parseFloat(document.getElementById('e-tax-amt').value)||0;if(!date||!name||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{month:date.slice(0,7),date,kind,name,amount:amt})}
-  save();closeEditModal();renderHistory();calcDash();toast('수정되었습니다');autoSync();
+  if(type==='inc'){const acId=document.getElementById('e-ac-inc').value;const month=document.getElementById('e-month-inc').value;const name=document.getElementById('e-inc-name').value.trim();const amt=parseFloat(document.getElementById('e-inc-amt').value)||0;if(!month||!name||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name,amount:amt,ts:Date.now()})}
+  else if(type==='sal'){const acId=document.getElementById('e-ac-sal').value;const month=document.getElementById('e-month-sal').value;const name=document.getElementById('e-sal-name').value.trim();const amt=parseFloat(document.getElementById('e-sal-amt').value)||0;const rate=parseFloat(document.getElementById('e-sal-rate').value)||3.3;if(!month||!name||!amt){toast('모두 입력하세요');return}const taxAmt=Math.round(amt*rate/100);Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name,amount:amt,rate,taxAmt,net:amt-taxAmt,ts:Date.now()})}
+  else if(type==='rent'){const acId=document.getElementById('e-ac-rent').value;const month=document.getElementById('e-month-rent').value;const name=document.getElementById('e-rent-name').value.trim();const amt=parseFloat(document.getElementById('e-rent-amt').value)||0;if(!month||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name:name||'월세',amount:amt,ts:Date.now()})}
+  else if(type==='mgmt'){const acId=document.getElementById('e-ac-mgmt').value;const month=document.getElementById('e-month-mgmt').value;const name=document.getElementById('e-mgmt-name').value.trim();const amt=parseFloat(document.getElementById('e-mgmt-amt').value)||0;if(!month||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name:name||'관리비',amount:amt,ts:Date.now()})}
+  else if(type==='bk'){const acId=document.getElementById('e-ac-bk').value;const month=document.getElementById('e-month-bk').value;const name=document.getElementById('e-bk-name').value.trim();const amt=parseFloat(document.getElementById('e-bk-amt').value)||0;if(!month||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name:name||'기장비',amount:amt,ts:Date.now()})}
+  else if(type==='tax'){const date=document.getElementById('e-tax-date').value;const kind=document.getElementById('e-tax-kind').value;const name=document.getElementById('e-tax-name').value.trim();const amt=parseFloat(document.getElementById('e-tax-amt').value)||0;if(!date||!name||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{month:date.slice(0,7),date,kind,name,amount:amt,ts:Date.now()})}
+  saveAndPush();closeEditModal();renderHistory();calcDash();toast('수정되었습니다');
 }
-function deleteFromModal(){if(!confirm('삭제할까요?'))return;db.entries=db.entries.filter(e=>e.id!==editId);save();closeEditModal();renderHistory();calcDash();toast('삭제되었습니다');autoSync()}
+function deleteFromModal(){
+  if(!confirm('삭제할까요?'))return;
+  db.entries=db.entries.filter(e=>e.id!==editId);
+  saveAndPush();closeEditModal();renderHistory();calcDash();toast('삭제되었습니다');
+}
 
-/* ── 다운로드 ── */
+/* ══════════════════════════════════════
+   다운로드
+══════════════════════════════════════ */
 function downloadCSV(){
   const f=document.getElementById('dl-f').value,t=document.getElementById('dl-t').value;
-  const rows=db.entries.filter(e=>(!f||e.month>=f)&&(!t||e.month<=t)).sort((a,b)=>a.month.localeCompare(b.month));
+  const rows=db.entries.filter(e=>(!f||e.month>=f)&&(!t||e.month<=t)).sort((a,b)=>(a.month||'').localeCompare(b.month||''));
   if(!rows.length){toast('해당 기간에 내역이 없습니다');return}
   const labels={inc:'수입',sal:'강사급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금납부'};
   const hdrs=['연월','학원','구분','항목','금액','공제세액','실지급액','세목','납부일'];
   const lines=[hdrs.join(',')];
   rows.forEach(e=>lines.push([e.month,e.acName||'',labels[e.type]||e.type,e.name||'',e.amount||0,e.taxAmt||'',e.net||'',e.kind||'',e.date||''].map(v=>`"${v}"`).join(',')));
-  const ti=rows.filter(e=>e.type==='inc').reduce((s,e)=>s+e.amount,0);
-  const ts=rows.filter(e=>e.type==='sal').reduce((s,e)=>s+e.amount,0);
-  const tr=rows.filter(e=>e.type==='rent').reduce((s,e)=>s+e.amount,0);
-  const tm=rows.filter(e=>e.type==='mgmt').reduce((s,e)=>s+e.amount,0);
-  const tb=rows.filter(e=>e.type==='bk').reduce((s,e)=>s+e.amount,0);
-  const tt=rows.filter(e=>e.type==='tax').reduce((s,e)=>s+e.amount,0);
-  lines.push('');lines.push(`"합계","","","","총수입:${ti}","총급여:${ts}","총월세:${tr}","총관리비:${tm}","총기장비:${tb}","총세금:${tt}","순이익:${ti-ts-tr-tm-tb-tt}"`);
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8'}));a.download=`학원재정_${f||'전체'}_${t||''}.csv`;a.click();toast('CSV 다운로드 완료');
+  const sums={inc:0,sal:0,rent:0,mgmt:0,bk:0,tax:0};
+  rows.forEach(e=>{if(sums[e.type]!==undefined)sums[e.type]+=(Number(e.amount)||0)});
+  lines.push('');
+  lines.push(`"합계","","","","총수입:${sums.inc}","총급여:${sums.sal}","총월세:${sums.rent}","총관리비:${sums.mgmt}","총기장비:${sums.bk}","총세금:${sums.tax}","순이익:${sums.inc-sums.sal-sums.rent-sums.mgmt-sums.bk-sums.tax}"`);
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8'}));
+  a.download=`학원재정_${f||'전체'}_${t||''}.csv`;a.click();toast('CSV 다운로드 완료');
 }
 function downloadJSON(){
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({v:5,exportedAt:new Date().toISOString(),db})],{type:'application/json'}));a.download=`학원재정_백업_${today()}.json`;a.click();toast('백업 완료');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify({v:6,exportedAt:new Date().toISOString(),db})],{type:'application/json'}));
+  a.download=`학원재정_백업_${today()}.json`;a.click();toast('백업 완료');
 }
 function restoreJSON(input){
   const file=input.files[0];if(!file)return;
-  const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);const restored=d.db||d;if(!restored.entries||!restored.academies){toast('올바른 백업 파일이 아닙니다');return}if(!confirm('현재 데이터를 덮어씁니다. 계속할까요?'))return;db=restored;save();renderAll();toast('복원 완료')}catch{toast('파일을 읽을 수 없습니다')}input.value=''};r.readAsText(file);
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      const restored=d.db||d;
+      if(!restored.entries||!restored.academies){toast('올바른 백업 파일이 아닙니다');return}
+      if(!confirm('현재 데이터를 덮어씁니다. 계속할까요?'))return;
+      db=restored;
+      saveAndPush();renderAll();toast('복원 완료');
+    }catch{toast('파일을 읽을 수 없습니다')}
+    input.value='';
+  };
+  r.readAsText(file);
 }
 
-/* ── 구글 시트 동기화 (완전 재작성 — 이중저장/누락 완전 차단) ── */
+/* ══════════════════════════════════════
+   구글 시트 동기화 — 완전 재설계
+   핵심 원칙: 구글 시트 = 단일 진실 원천
+   • 입력/수정/삭제 → 즉시 구글 시트에 push
+   • 동기화 버튼 → 구글 시트에서 pull (로컬 덮어쓰기)
+   • 병합(merge) 하지 않음 → 이중저장 원천 차단
+══════════════════════════════════════ */
 function saveGsUrl(){
   const url=document.getElementById('gs-url').value.trim();
   db.gsUrl=url;save();setConn(!!url);
-  toast(url?'연동 저장 완료 — 아래 전체 동기화를 눌러주세요':'연동 해제됨',3000);
+  toast(url?'연동 저장 완료':'연동 해제됨',2000);
 }
 
-// 서버에서 데이터 가져오기
+async function apiGet(url){
+  const res=await fetch(url+'?action=getAll&t='+Date.now(),{cache:'no-store'});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return res.json();
+}
+async function apiPost(url, body){
+  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return res.json();
+}
+
+// 로컬 데이터를 구글 시트에 push (입력/수정/삭제 후 자동 호출)
+async function pushToSheet(){
+  if(!db.gsUrl)return;
+  try{
+    await apiPost(db.gsUrl,{action:'syncAll',db:{academies:db.academies,entries:db.entries}});
+    setConn(true);
+  }catch(e){console.warn('push fail',e)}
+}
+
+// 구글 시트에서 pull → 로컬 완전 교체 (병합 없음)
 async function pullFromSheet(){
   if(!db.gsUrl)return null;
   try{
-    const res=await fetch(db.gsUrl+'?action=getAll&t='+Date.now(),{cache:'no-store'});
-    if(!res.ok)return null;
-    const data=await res.json();
-    return data.status==='ok'?data:null;
+    const data=await apiGet(db.gsUrl);
+    if(data.status==='ok')return data;
+    return null;
   }catch(e){return null}
 }
 
-// 서버에 데이터 올리기 (항상 전체 덮어쓰기)
-async function pushToSheet(entries, academies){
-  if(!db.gsUrl)return false;
-  try{
-    const res=await fetch(db.gsUrl,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action:'syncAll',db:{academies,entries}})
-    });
-    const data=await res.json();
-    return data.status==='ok';
-  }catch(e){return false}
-}
-
-// id 기준 완전 중복 제거 병합
-function mergeEntries(a, b){
-  const map=new Map();
-  [...(a||[]),...(b||[])].forEach(e=>{
-    if(!e||!e.id)return;
-    const key=String(e.id).trim();
-    if(!key)return;
-    const ex=map.get(key);
-    // 같은 id: ts(타임스탬프)가 더 최신인 것만 유지
-    if(!ex||(Number(e.ts)||0)>=(Number(ex.ts)||0)){
-      map.set(key,e);
-    }
-  });
-  return Array.from(map.values()).sort((a,b)=>(Number(a.ts)||0)-(Number(b.ts)||0));
-}
-
-function mergeAcademies(a, b){
-  const map=new Map();
-  [...(a||[]),...(b||[])].forEach(x=>{
-    if(x&&x.id)map.set(String(x.id).trim(),x);
-  });
-  return Array.from(map.values());
-}
-
-// 입력/수정/삭제 후 백그라운드 자동 저장 (병합 없이 현재 로컬 상태만 push)
-async function autoSync(){
-  if(!db.gsUrl)return;
-  try{
-    const ok=await pushToSheet(db.entries, db.academies);
-    if(ok)setConn(true);
-  }catch(e){console.warn('autoSync fail',e)}
-}
-
-// 헤더 동기화 버튼: pull → 병합 → push 순서로 양방향 동기화
+// 헤더 동기화 버튼: 구글 시트 → 로컬 덮어쓰기
 async function syncNow(){
   if(!db.gsUrl){toast('설정 탭에서 구글 시트 URL을 먼저 입력하세요',3000);return}
+  if(isSyncing){toast('동기화 중입니다...');return}
+  isSyncing=true;
   setSyncLabel('동기화 중...');
   try{
     const remote=await pullFromSheet();
     if(!remote){
-      toast('서버 응답 없음',3000);setConn(false);setSyncLabel('동기화');return;
-    }
-    const localBefore=db.entries.length;
-    // 병합 (id 기준 중복 완전 제거)
-    const merged=mergeEntries(db.entries, remote.entries||[]);
-    const mergedAc=mergeAcademies(db.academies, remote.academies||[]);
-    // 병합 결과를 서버에 덮어쓰기
-    const ok=await pushToSheet(merged, mergedAc);
-    if(ok){
-      db.entries=merged;
-      db.academies=mergedAc;
-      save();renderAll();
-      const added=db.entries.length-localBefore;
-      toast('동기화 완료 — 총 '+db.entries.length+'건'+(added>0?' (+'+added+'건)':''));
-      setConn(true);
+      toast('서버 응답 없음',3000);setConn(false);
     }else{
-      toast('서버 저장 실패 — 다시 시도하세요',3000);
+      // 구글 시트 데이터로 로컬 완전 교체 (병합 없음)
+      db.entries=remote.entries||[];
+      db.academies=remote.academies||[];
+      save();renderAll();
+      toast('동기화 완료 — 총 '+db.entries.length+'건');
+      setConn(true);
     }
   }catch(e){toast('오류: '+e.message,3000);setConn(false)}
+  isSyncing=false;
   setSyncLabel('동기화');
 }
 
-// 설정탭 전체 동기화 버튼
-async function fullSync(){
-  if(!db.gsUrl){toast('URL을 먼저 입력하고 연동 저장을 눌러주세요',3000);return}
-  const prog=document.getElementById('sync-progress');
-  prog.style.display='block';
-  prog.textContent='⏳ 1/3 서버에서 데이터 가져오는 중...';
+// 설정 탭: 이 기기 데이터로 구글 시트 강제 덮어쓰기
+async function forceOverwrite(){
+  if(!db.gsUrl){toast('URL을 먼저 입력하세요',3000);return}
+  if(!confirm('구글 시트의 모든 데이터를 이 기기 데이터로 완전히 덮어씁니다.\n다른 기기의 데이터는 사라집니다.\n\n계속할까요?'))return;
+  showProg('overwrite-progress','⏳ 구글 시트에 업로드 중...');
   try{
-    const remote=await pullFromSheet();
-    if(!remote){
-      prog.textContent='❌ 서버 응답 없음 — URL과 배포 권한을 확인하세요';
-      setConn(false);return;
-    }
-    prog.textContent='⏳ 2/3 중복 없이 데이터 병합 중...';
-    const localBefore=db.entries.length;
-    const merged=mergeEntries(db.entries, remote.entries||[]);
-    const mergedAc=mergeAcademies(db.academies, remote.academies||[]);
-    const added=merged.length-localBefore;
-    prog.textContent='⏳ 3/3 병합 결과 서버에 저장 중...';
-    const ok=await pushToSheet(merged, mergedAc);
-    if(ok){
-      db.entries=merged;
-      db.academies=mergedAc;
-      save();renderAll();
-      prog.textContent='✅ 완료! 총 '+db.entries.length+'건'+(added>0?' (새로 추가 '+added+'건)':'');
-      setConn(true);toast('전체 동기화 완료!');
-    }else{
-      prog.textContent='⚠️ 서버 저장 실패 — 잠시 후 다시 시도하세요';
-    }
+    await apiPost(db.gsUrl,{action:'syncAll',db:{academies:db.academies,entries:db.entries}});
+    hideProg('overwrite-progress','✅ 완료! 총 '+db.entries.length+'건 업로드됨',5000);
+    setConn(true);toast('구글 시트 초기화 완료');
   }catch(e){
-    prog.textContent='❌ 오류: '+e.message;setConn(false);
+    hideProg('overwrite-progress','❌ 실패: '+e.message,5000);
   }
 }
 
-/* ── 전체 렌더 ── */
+/* ══════════════════════════════════════
+   전체 렌더
+══════════════════════════════════════ */
 function renderAll(){
   calcDash();
   if(document.getElementById('s-history').classList.contains('on'))renderHistory();
@@ -850,28 +927,30 @@ function renderAll(){
   renderAcChips();refreshAcSelect();
 }
 
-/* ── 초기화 ── */
+/* ══════════════════════════════════════
+   초기화
+══════════════════════════════════════ */
 function init(){
   load();
   const m=now();
-  ['pf','pt','hf','ht','bf','bt','i-month-inc','i-month-sal','i-month-rent','i-month-mgmt','i-month-bk'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=m});
+  ['pf','pt','hf','ht','bf','bt','i-month-inc','i-month-sal','i-month-rent','i-month-mgmt','i-month-bk'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value=m;
+  });
   document.getElementById('i-tax-date').value=today();
-  document.getElementById('dl-f').value=m;document.getElementById('dl-t').value=m;
-  if(!db.academies.length){db.academies=[{id:'ac1',name:'장기동(생각키움)'},{id:'ac2',name:'사우동(생각키움)'}];save()}
+  document.getElementById('dl-f').value=m;
+  document.getElementById('dl-t').value=m;
+  if(!db.academies.length){
+    db.academies=[{id:genId(),name:'장기동(생각키움)'},{id:genId(),name:'사우동(생각키움)'}];
+    save();
+  }
   refreshAcSelect();renderAcChips();calcDash();setConn(!!db.gsUrl);
-  // 앱 시작 시 자동 동기화
+  // 앱 시작 시 구글 시트에서 자동 pull (로컬 덮어쓰기)
   if(db.gsUrl){
     setSyncLabel('불러오는 중...');
-    pullFromSheet().then(async remote=>{
+    pullFromSheet().then(remote=>{
       if(remote){
-        const before=db.entries.length;
-        const merged=mergeEntries(db.entries, remote.entries||[]);
-        const mergedAc=mergeAcademies(db.academies, remote.academies||[]);
-        // 로컬과 서버 데이터가 다를 때만 push (불필요한 덮어쓰기 방지)
-        const changed=(merged.length!==before);
-        db.entries=merged;
-        db.academies=mergedAc;
-        if(changed)await pushToSheet(db.entries, db.academies);
+        db.entries=remote.entries||[];
+        db.academies=remote.academies||[];
         save();renderAll();setConn(true);
         toast('최신 데이터 불러옴',1500);
       }
