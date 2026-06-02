@@ -439,8 +439,20 @@ async function idbLoad(){if(!idb)await idbOpen();if(!idb)return;try{const r=idb.
    유틸
 ══════════════════════════════════════ */
 const W=n=>'₩'+Math.round(n||0).toLocaleString('ko-KR');
-const now=()=>new Date().toISOString().slice(0,7);
-const today=()=>new Date().toISOString().slice(0,10);
+// KST(한국시간) 기준 현재 연월 반환
+function kstNow(){
+  const d=new Date();
+  // UTC+9 보정
+  const kst=new Date(d.getTime()+9*60*60*1000);
+  return kst.toISOString().slice(0,7);
+}
+const now=()=>kstNow();
+function kstToday(){
+  const d=new Date();
+  const kst=new Date(d.getTime()+9*60*60*1000);
+  return kst.toISOString().slice(0,10);
+}
+const today=()=>kstToday();
 function toast(msg,dur=1800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur)}
 function setSyncLabel(t){const el=document.getElementById('sync-label');if(el)el.textContent=t}
 function setConn(on){document.getElementById('conn-dot').className='conn-dot '+(on?'on':'off');document.getElementById('conn-txt').textContent=on?'구글시트연동':'로컬저장'}
@@ -592,7 +604,19 @@ function saveEntry(){
 function calcDash(){
   const f=document.getElementById('pf').value;
   const t=document.getElementById('pt').value;
-  const ok=e=>(!f||e.month>=f)&&(!t||e.month<=t);
+  const ok=e=>{
+  let m=e.month||'';
+  if(m.length>7&&m.includes('T')){
+    const dt=new Date(m);
+    const kst=new Date(dt.getTime()+9*60*60*1000);
+    m=kst.toISOString().slice(0,7);
+    e.month=m;
+  }else{
+    m=m.slice(0,7);
+    if(m)e.month=m;
+  }
+  return(!f||m>=f)&&(!t||m<=t);
+};
   const sum=type=>db.entries.filter(e=>e.type===type&&ok(e)).reduce((s,e)=>s+(Number(e.amount)||0),0);
   const inc=sum('inc'),sal=sum('sal'),rent=sum('rent'),mgmt=sum('mgmt'),bk=sum('bk'),tax=sum('tax');
   const net=inc-sal-rent-mgmt-bk-tax;
@@ -630,7 +654,21 @@ function renderHistory(){
   if(!rows.length){el.innerHTML='<div class="empty">내역이 없습니다</div>';return}
   const labels={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금'};
   const grouped={};
-  rows.forEach(e=>{const k=(e.month||'').slice(0,7);(grouped[k]=grouped[k]||[]).push(e)});
+  rows.forEach(e=>{
+  // month 필드 정규화: ISO datetime이면 KST 변환, 아니면 앞 7자리만
+  let m=e.month||'';
+  if(m.length>7&&m.includes('T')){
+    // ISO datetime → KST 변환
+    const dt=new Date(m);
+    const kst=new Date(dt.getTime()+9*60*60*1000);
+    m=kst.toISOString().slice(0,7);
+    e.month=m; // 정규화된 값으로 업데이트
+  }else{
+    m=m.slice(0,7);
+    e.month=m;
+  }
+  (grouped[m]=grouped[m]||[]).push(e);
+});
   el.innerHTML=Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).map(month=>{
     const items=grouped[month].map(e=>`<div class="li">
       <div class="li-l">
@@ -660,7 +698,16 @@ function setByacAc(id){byacAcId=id;renderByAc()}
 function toggleAcDetail(id){const el=document.getElementById(id);if(el)el.classList.toggle('open')}
 function renderByAc(){
   const f=document.getElementById('bf').value,t=document.getElementById('bt').value;
-  const ok=e=>(!f||e.month>=f)&&(!t||e.month<=t);
+  const ok=e=>{
+  let m=e.month||'';
+  if(m.length>7&&m.includes('T')){
+    const dt=new Date(m);
+    const kst=new Date(dt.getTime()+9*60*60*1000);
+    m=kst.toISOString().slice(0,7);
+    e.month=m;
+  }else{m=m.slice(0,7);if(m)e.month=m;}
+  return(!f||m>=f)&&(!t||m<=t);
+};
   const acs=db.academies;
   document.getElementById('byac-tabs').innerHTML=
     `<button class="ac-tab ${byacAcId==='all'?'on':''}" onclick="setByacAc('all')">전체</button>`+
@@ -891,8 +938,17 @@ async function syncNow(){
     if(!remote){
       toast('서버 응답 없음',3000);setConn(false);
     }else{
-      // 구글 시트 데이터로 로컬 완전 교체 (병합 없음)
-      db.entries=remote.entries||[];
+      // 구글 시트 데이터로 로컬 완전 교체 + month KST 정규화
+      const se=remote.entries||[];
+      se.forEach(e=>{
+        let m=e.month||'';
+        if(m.length>7&&m.includes('T')){
+          const dt=new Date(m);
+          const kst=new Date(dt.getTime()+9*60*60*1000);
+          e.month=kst.toISOString().slice(0,7);
+        }else if(m.length>7){e.month=m.slice(0,7);}
+      });
+      db.entries=se;
       db.academies=remote.academies||[];
       save();renderAll();
       toast('동기화 완료 — 총 '+db.entries.length+'건');
