@@ -3,1015 +3,759 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>학원 재정 관리 — 생각키움연구소</title>
+<title>생각키움연구소 재정관리</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --blue:#185FA5;--blue-light:#E6F1FB;--blue-dark:#0C447C;
-  --green:#3B6D11;--green-light:#EAF3DE;
-  --red:#A32D2D;--red-light:#FCEBEB;
-  --amber:#854F0B;--amber-light:#FAEEDA;
-  --purple:#3C3489;--purple-light:#EEEDFE;
-  --gray:#5F5E5A;--gray-light:#F1EFE8;
-  --border:#e0ddd6;--bg:#f8f7f4;--card:#fff;
-  --text:#1a1a18;--text2:#5F5E5A;--text3:#888780;
-  --radius:12px;--radius-sm:8px;
+  --bl:#185FA5;--bll:#E6F1FB;--bld:#0C447C;
+  --gn:#3B6D11;--gnl:#EAF3DE;
+  --rd:#A32D2D;--rdl:#FCEBEB;
+  --am:#854F0B;--aml:#FAEEDA;
+  --pp:#3C3489;--ppl:#EEEDFE;
+  --gy:#5F5E5A;--gyl:#F1EFE8;
+  --bd:#e0ddd6;--bg:#f8f7f4;--cd:#fff;
+  --tx:#1a1a18;--t2:#5F5E5A;--t3:#888780;
+  --r:12px;--rs:8px;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:var(--text);background:var(--bg);min-height:100vh;padding-bottom:72px}
-.header{background:var(--blue-dark);color:#fff;padding:14px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.header h1{font-size:16px;font-weight:600}
-.header-sub{font-size:11px;opacity:.7;margin-top:1px}
-.sync-btn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:inherit}
-.sync-btn:active{opacity:.7}
-.conn-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
-.conn-dot.on{background:#5DCAA5}.conn-dot.off{background:#F09595}
-.tabbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:0.5px solid var(--border);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
-.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 6px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:10px;font-family:inherit}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:var(--tx);background:var(--bg);min-height:100vh;padding-bottom:72px}
+.hdr{background:var(--bld);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.hdr h1{font-size:16px;font-weight:600}
+.hdr-sub{font-size:11px;opacity:.7;margin-top:1px}
+.cdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.cdot.on{background:#5DCAA5}.cdot.off{background:#F09595}
+.sbtn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 11px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px}
+.tbr{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:0.5px solid var(--bd);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 6px;border:none;background:none;cursor:pointer;color:var(--t3);font-size:10px;font-family:inherit}
 .tb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.tb.on{color:var(--blue)}
-.screen{display:none;padding:12px 12px 4px}.screen.on{display:block}
-.card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.tb.on{color:var(--bl)}
+.sc{display:none;padding:12px}.sc.on{display:block}
+.card{background:var(--cd);border:0.5px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:10px}
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.sbox{background:var(--gray-light);border-radius:var(--radius-sm);padding:12px 10px}
-.sbox .lbl{font-size:11px;color:var(--text2);margin-bottom:5px}
-.sbox .val{font-size:17px;font-weight:600}
-.val.g{color:var(--green)}.val.r{color:var(--red)}
-.net-box{text-align:center;padding:18px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px}
-.net-lbl{font-size:12px;color:var(--text2);margin-bottom:6px}
-.net-val{font-size:30px;font-weight:700}
-.pbar{display:flex;gap:6px;align-items:center;margin-bottom:10px}
-.pbar input{flex:1;min-width:0;font-size:13px;padding:8px 10px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;color:var(--text);font-family:inherit}
-.pbar span{color:var(--text3);font-size:13px;flex-shrink:0}
-.pbar button,.qbtn{padding:8px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500}
-.stitle{font-size:12px;font-weight:600;color:var(--text2);margin:14px 0 6px;padding-left:2px;letter-spacing:.3px}
-.field{margin-bottom:11px}
-.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
-input[type=text],input[type=number],input[type=month],input[type=date],select{width:100%;font-size:15px;padding:11px 13px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;color:var(--text);font-family:inherit;appearance:none;-webkit-appearance:none}
-input[type=text]{ime-mode:active;-webkit-ime-mode:active}
-input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.12)}
-.save-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;cursor:pointer;margin-top:4px;font-family:inherit}
-.save-btn:active{opacity:.85}
-.li{display:flex;align-items:flex-start;gap:8px;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.sb{background:var(--gyl);border-radius:var(--rs);padding:12px 10px}
+.sb .lb{font-size:11px;color:var(--t2);margin-bottom:5px}
+.sb .vl{font-size:17px;font-weight:600}
+.vl.g{color:var(--gn)}.vl.r{color:var(--rd)}
+.nb{text-align:center;padding:18px;background:var(--cd);border:0.5px solid var(--bd);border-radius:var(--r);margin-bottom:10px}
+.nl{font-size:12px;color:var(--t2);margin-bottom:6px}
+.nv{font-size:30px;font-weight:700}
+.pb{display:flex;gap:6px;align-items:center;margin-bottom:10px}
+.pb input{flex:1;min-width:0;font-size:13px;padding:8px 10px;border:0.5px solid var(--bd);border-radius:var(--rs);background:#fff;color:var(--tx);font-family:inherit}
+.pb span{color:var(--t3);font-size:13px;flex-shrink:0}
+.pb button,.qb{padding:8px 14px;background:var(--bl);color:#fff;border:none;border-radius:var(--rs);font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:500}
+.st{font-size:12px;font-weight:600;color:var(--t2);margin:12px 0 5px;padding-left:2px}
+.fd{margin-bottom:11px}
+.fd label{display:block;font-size:12px;font-weight:600;color:var(--t2);margin-bottom:5px}
+input[type=text],input[type=number],input[type=month],input[type=date],select{width:100%;font-size:15px;padding:11px 13px;border:0.5px solid var(--bd);border-radius:var(--rs);background:#fff;color:var(--tx);font-family:inherit;appearance:none;-webkit-appearance:none}
+input[type=text]{ime-mode:active}
+input:focus,select:focus{outline:none;border-color:var(--bl);box-shadow:0 0 0 3px rgba(24,95,165,.12)}
+.sbtn2{width:100%;padding:14px;background:var(--bl);color:#fff;border:none;border-radius:var(--rs);font-size:16px;font-weight:600;cursor:pointer;margin-top:4px;font-family:inherit}
+.sbtn2:active{opacity:.85}
+.li{display:flex;align-items:flex-start;gap:8px;padding:11px 0;border-bottom:0.5px solid var(--bd)}
 .li:last-child{border-bottom:none}
-.li-l{flex:1;min-width:0}
-.tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:3px}
-.tag-inc{background:var(--green-light);color:var(--green)}
-.tag-sal{background:var(--amber-light);color:var(--amber)}
-.tag-rent{background:var(--red-light);color:var(--red)}
-.tag-mgmt{background:var(--amber-light);color:var(--amber)}
-.tag-bk{background:var(--purple-light);color:var(--purple)}
-.tag-tax{background:var(--blue-light);color:var(--blue)}
-.li-name{font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.li-sub{font-size:12px;color:var(--text3);margin-top:1px}
-.li-r{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.li-amt{font-size:15px;font-weight:600;white-space:nowrap}
-.li-amt.p{color:var(--green)}.li-amt.m{color:var(--red)}
-.edit-btn{background:none;border:none;cursor:pointer;color:var(--blue);padding:4px;font-size:18px;line-height:1}
-.del-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;font-size:20px;line-height:1}
-.del-btn:active{color:var(--red)}
-.preview{background:var(--green-light);border-radius:var(--radius-sm);padding:10px 13px;margin:4px 0 10px;font-size:13px;color:var(--green);display:none}
+.lil{flex:1;min-width:0}
+.tg{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-bottom:3px}
+.ti{background:var(--gnl);color:var(--gn)}
+.ts{background:var(--aml);color:var(--am)}
+.tr{background:var(--rdl);color:var(--rd)}
+.tm{background:var(--aml);color:var(--am)}
+.tb2{background:var(--ppl);color:var(--pp)}
+.tx2{background:var(--bll);color:var(--bl)}
+.ln{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ls{font-size:12px;color:var(--t3);margin-top:1px}
+.lr{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.la{font-size:15px;font-weight:600;white-space:nowrap}
+.la.p{color:var(--gn)}.la.m{color:var(--rd)}
+.eb{background:none;border:none;cursor:pointer;color:var(--bl);padding:4px;font-size:18px;line-height:1}
+.db{background:none;border:none;cursor:pointer;color:var(--t3);padding:4px;font-size:20px;line-height:1}
+.pv{background:var(--gnl);border-radius:var(--rs);padding:10px 13px;margin:4px 0 10px;font-size:13px;color:var(--gn);display:none}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;white-space:nowrap;z-index:999;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
-.chip{display:inline-flex;align-items:center;gap:6px;background:var(--gray-light);border:0.5px solid var(--border);border-radius:20px;padding:6px 12px;margin:4px;font-size:13px}
-.chip button{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;line-height:1;padding:0}
-.empty{text-align:center;padding:28px 0;color:var(--text3);font-size:13px}
-.gs-box{background:var(--blue-light);border-radius:var(--radius);padding:14px;margin-bottom:10px;border:0.5px solid rgba(24,95,165,.2)}
-.gs-title{font-size:13px;font-weight:600;color:var(--blue-dark);margin-bottom:6px}
-.gs-desc{font-size:12px;color:var(--blue);line-height:1.8}
-.dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#fff;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;color:var(--text);font-family:inherit;margin-bottom:8px}
-.dl-btn:active{background:var(--gray-light)}
-.dl-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0}
-.ac-row{display:flex;align-items:center;padding:11px 0;border-bottom:0.5px solid var(--border)}
-.ac-row:last-child{border-bottom:none}
-.ac-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);margin-right:10px;flex-shrink:0}
-.ac-info{flex:1;min-width:0}
-.ac-name2{font-size:14px;font-weight:500}
-.ac-nums{font-size:12px;color:var(--text3);margin-top:2px}
-.ac-net{font-size:14px;font-weight:600;margin-left:8px;white-space:nowrap}
-.type-tabs{display:flex;gap:0;border:0.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:14px}
-.type-tab{flex:1;padding:9px 2px;border:none;background:#fff;font-size:11px;font-weight:500;cursor:pointer;color:var(--text2);font-family:inherit;border-right:0.5px solid var(--border)}
-.type-tab:last-child{border-right:none}
-.type-tab.on{background:var(--blue);color:#fff}
-.ac-tabs{display:flex;overflow-x:auto;margin-bottom:12px;border-bottom:0.5px solid var(--border);scrollbar-width:none}
-.ac-tabs::-webkit-scrollbar{display:none}
-.ac-tab{flex-shrink:0;padding:9px 14px;border:none;background:none;font-size:13px;font-weight:500;cursor:pointer;color:var(--text3);font-family:inherit;border-bottom:2px solid transparent;white-space:nowrap}
-.ac-tab.on{color:var(--blue);border-bottom-color:var(--blue)}
-.ac-detail-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden}
-.ac-detail-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;cursor:pointer}
-.ac-detail-name{font-size:15px;font-weight:600}
-.ac-detail-net{font-size:15px;font-weight:700}
-.ac-detail-body{display:none;border-top:0.5px solid var(--border);padding:0 14px}
-.ac-detail-body.open{display:block}
-.sub-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px}
-.sub-row:last-child{border-bottom:none}
-.sub-row.total{font-weight:700;font-size:14px;padding:10px 0}
-.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center}
-.modal-wrap.open{display:flex}
-.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto}
-.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
-.modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text3);line-height:1;padding:0}
-.modal-row{display:flex;gap:8px}.modal-row .field{flex:1}
-.prog-box{background:var(--gray-light);border-radius:var(--radius-sm);padding:12px;font-size:13px;margin-top:8px;display:none;line-height:1.7}
-.warn-box{background:#FFF8E1;border:0.5px solid #F9A825;border-radius:var(--radius-sm);padding:12px;font-size:12px;margin-bottom:10px;color:#5D4037;line-height:1.7}
-@media(min-width:600px){body{max-width:480px;margin:0 auto}.tabbar{max-width:480px;left:50%;transform:translateX(-50%)}}
+.cp{display:inline-flex;align-items:center;gap:6px;background:var(--gyl);border:0.5px solid var(--bd);border-radius:20px;padding:6px 12px;margin:4px;font-size:13px}
+.cp button{background:none;border:none;cursor:pointer;color:var(--t3);font-size:18px;line-height:1;padding:0}
+.em{text-align:center;padding:28px 0;color:var(--t3);font-size:13px}
+.gsb{background:var(--bll);border-radius:var(--r);padding:14px;margin-bottom:10px;border:0.5px solid rgba(24,95,165,.2)}
+.gst{font-size:13px;font-weight:600;color:var(--bld);margin-bottom:6px}
+.gsd{font-size:12px;color:var(--bl);line-height:1.8}
+.dlb{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:#fff;border:0.5px solid var(--bd);border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;color:var(--tx);font-family:inherit;margin-bottom:8px}
+.dlb svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0}
+.ar{display:flex;align-items:center;padding:11px 0;border-bottom:0.5px solid var(--bd)}
+.ar:last-child{border-bottom:none}
+.ad{width:8px;height:8px;border-radius:50%;background:var(--bl);margin-right:10px;flex-shrink:0}
+.ai{flex:1;min-width:0}
+.an{font-size:14px;font-weight:500}
+.anu{font-size:12px;color:var(--t3);margin-top:2px}
+.av{font-size:14px;font-weight:600;margin-left:8px;white-space:nowrap}
+.tts{display:flex;border:0.5px solid var(--bd);border-radius:var(--rs);overflow:hidden;margin-bottom:14px}
+.tt{flex:1;padding:9px 2px;border:none;background:#fff;font-size:11px;font-weight:500;cursor:pointer;color:var(--t2);font-family:inherit;border-right:0.5px solid var(--bd)}
+.tt:last-child{border-right:none}
+.tt.on{background:var(--bl);color:#fff}
+.ats{display:flex;overflow-x:auto;margin-bottom:12px;border-bottom:0.5px solid var(--bd);scrollbar-width:none}
+.ats::-webkit-scrollbar{display:none}
+.at{flex-shrink:0;padding:9px 14px;border:none;background:none;font-size:13px;font-weight:500;cursor:pointer;color:var(--t3);font-family:inherit;border-bottom:2px solid transparent;white-space:nowrap}
+.at.on{color:var(--bl);border-bottom-color:var(--bl)}
+.adc{background:var(--cd);border:0.5px solid var(--bd);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.adh{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;cursor:pointer}
+.adn{font-size:15px;font-weight:600}
+.adv{font-size:15px;font-weight:700}
+.adb{display:none;border-top:0.5px solid var(--bd);padding:0 14px}
+.adb.open{display:block}
+.sr{display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--bd);font-size:13px}
+.sr:last-child{border-bottom:none}
+.sr.tot{font-weight:700;font-size:14px;padding:10px 0}
+.mw{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center}
+.mw.open{display:flex}
+.md{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto}
+.mdt{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.mdc{background:none;border:none;font-size:24px;cursor:pointer;color:var(--t3);line-height:1;padding:0}
+.mr{display:flex;gap:8px}.mr .fd{flex:1}
+.wb{background:#FFF8E1;border:0.5px solid #F9A825;border-radius:var(--rs);padding:12px;font-size:12px;margin-bottom:10px;color:#5D4037;line-height:1.7}
+.pg{background:var(--gyl);border-radius:var(--rs);padding:12px;font-size:13px;margin-top:8px;display:none;line-height:1.7}
+@media(min-width:600px){body{max-width:480px;margin:0 auto}.tbr{max-width:480px;left:50%;transform:translateX(-50%)}}
 </style>
 </head>
 <body>
-
-<div class="header">
+<div class="hdr">
   <div>
     <div style="display:flex;align-items:center;gap:8px">
       <h1>생각키움연구소</h1>
       <span style="font-size:11px;opacity:.85;display:flex;align-items:center">
-        <span class="conn-dot off" id="conn-dot"></span>
-        <span id="conn-txt">로컬저장</span>
+        <span class="cdot off" id="cdot"></span><span id="ctxt">로컬저장</span>
       </span>
     </div>
-    <div class="header-sub">학원 재정 통합 관리</div>
+    <div class="hdr-sub">학원 재정 통합 관리</div>
   </div>
-  <button class="sync-btn" onclick="syncNow()" id="sync-btn">
+  <button class="sbtn" onclick="syncNow()" id="sbtn">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-    <span id="sync-label">동기화</span>
+    <span id="slbl">동기화</span>
   </button>
 </div>
-
 <div id="toast" class="toast"></div>
 
 <!-- 홈 -->
-<div id="s-home" class="screen on">
-  <div class="pbar">
-    <input type="month" id="pf"><span>~</span><input type="month" id="pt">
-    <button onclick="calcDash()">조회</button>
-  </div>
-  <div class="net-box">
-    <div class="net-lbl">이 기간 순이익</div>
-    <div class="net-val" id="d-net">₩0</div>
-  </div>
+<div id="s-home" class="sc on">
+  <div class="pb"><input type="month" id="pf"><span>~</span><input type="month" id="pt"><button onclick="dash()">조회</button></div>
+  <div class="nb"><div class="nl">이 기간 순이익</div><div class="nv" id="dnet">₩0</div></div>
   <div class="sg">
-    <div class="sbox"><div class="lbl">총 수입</div><div class="val g" id="d-inc">₩0</div></div>
-    <div class="sbox"><div class="lbl">강사 급여</div><div class="val r" id="d-sal">₩0</div></div>
-    <div class="sbox"><div class="lbl">월세</div><div class="val r" id="d-rent">₩0</div></div>
-    <div class="sbox"><div class="lbl">관리비</div><div class="val r" id="d-mgmt">₩0</div></div>
-    <div class="sbox"><div class="lbl">기장비</div><div class="val r" id="d-bk">₩0</div></div>
-    <div class="sbox"><div class="lbl">세금 납부</div><div class="val r" id="d-tax">₩0</div></div>
+    <div class="sb"><div class="lb">총 수입</div><div class="vl g" id="dinc">₩0</div></div>
+    <div class="sb"><div class="lb">강사 급여</div><div class="vl r" id="dsal">₩0</div></div>
+    <div class="sb"><div class="lb">월세</div><div class="vl r" id="drent">₩0</div></div>
+    <div class="sb"><div class="lb">관리비</div><div class="vl r" id="dmgmt">₩0</div></div>
+    <div class="sb"><div class="lb">기장비</div><div class="vl r" id="dbk">₩0</div></div>
+    <div class="sb"><div class="lb">세금 납부</div><div class="vl r" id="dtax">₩0</div></div>
   </div>
-  <div class="stitle">학원별 현황</div>
-  <div class="card" id="d-ac-list"><div class="empty">학원을 먼저 등록하세요</div></div>
+  <div class="st">학원별 현황</div>
+  <div class="card" id="dacl"><div class="em">학원을 먼저 등록하세요</div></div>
 </div>
 
 <!-- 입력 -->
-<div id="s-input" class="screen">
+<div id="s-input" class="sc">
   <div class="card">
-    <div class="type-tabs">
-      <button class="type-tab on" onclick="setType('inc',this)">수입</button>
-      <button class="type-tab" onclick="setType('sal',this)">급여</button>
-      <button class="type-tab" onclick="setType('rent',this)">월세</button>
-      <button class="type-tab" onclick="setType('mgmt',this)">관리비</button>
-      <button class="type-tab" onclick="setType('bk',this)">기장비</button>
-      <button class="type-tab" onclick="setType('tax',this)">세금</button>
+    <div class="tts">
+      <button class="tt on" onclick="stype('inc',this)">수입</button>
+      <button class="tt" onclick="stype('sal',this)">급여</button>
+      <button class="tt" onclick="stype('rent',this)">월세</button>
+      <button class="tt" onclick="stype('mgmt',this)">관리비</button>
+      <button class="tt" onclick="stype('bk',this)">기장비</button>
+      <button class="tt" onclick="stype('tax',this)">세금</button>
     </div>
-    <div id="f-ac" class="field"><label>학원</label><select id="i-ac"></select></div>
-    <div id="g-inc">
-      <div class="field"><label>연월</label><input type="month" id="i-month-inc"></div>
-      <div class="field"><label>항목 (예: 수강료, 교재비)</label><input type="text" id="i-inc-name" placeholder="입력" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="i-inc-amt" placeholder="0" inputmode="numeric"></div>
+    <div id="fac" class="fd"><label>학원</label><select id="iac"></select></div>
+    <div id="ginc">
+      <div class="fd"><label>연월</label><input type="month" id="iminc"></div>
+      <div class="fd"><label>항목 (예: 수강료, 교재비)</label><input type="text" id="iname" placeholder="입력" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="iamt" placeholder="0" inputmode="numeric"></div>
     </div>
-    <div id="g-sal" style="display:none">
-      <div class="field"><label>연월</label><input type="month" id="i-month-sal"></div>
-      <div class="field"><label>강사 이름</label><input type="text" id="i-sal-name" placeholder="이름 입력" lang="ko" inputmode="text"></div>
-      <div class="field"><label>지급액</label><input type="number" id="i-sal-amt" placeholder="0" inputmode="numeric" oninput="calcSal()"></div>
-      <div class="field"><label>원천징수율 (기본 3.3%)</label><input type="number" id="i-sal-rate" value="3.3" step="0.1" inputmode="decimal" oninput="calcSal()"></div>
-      <div id="sal-preview" class="preview"></div>
+    <div id="gsal" style="display:none">
+      <div class="fd"><label>연월</label><input type="month" id="imsal"></div>
+      <div class="fd"><label>강사 이름</label><input type="text" id="isname" placeholder="이름" lang="ko"></div>
+      <div class="fd"><label>지급액</label><input type="number" id="isamt" placeholder="0" inputmode="numeric" oninput="csal()"></div>
+      <div class="fd"><label>원천징수율 (기본 3.3%)</label><input type="number" id="israte" value="3.3" step="0.1" oninput="csal()"></div>
+      <div id="spv" class="pv"></div>
     </div>
-    <div id="g-rent" style="display:none">
-      <div class="field"><label>연월</label><input type="month" id="i-month-rent"></div>
-      <div class="field"><label>항목명</label><input type="text" id="i-rent-name" placeholder="예: 1월 월세" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="i-rent-amt" placeholder="0" inputmode="numeric"></div>
+    <div id="grent" style="display:none">
+      <div class="fd"><label>연월</label><input type="month" id="imrent"></div>
+      <div class="fd"><label>항목명</label><input type="text" id="irname" placeholder="예: 1월 월세" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="iramt" placeholder="0" inputmode="numeric"></div>
     </div>
-    <div id="g-mgmt" style="display:none">
-      <div class="field"><label>연월</label><input type="month" id="i-month-mgmt"></div>
-      <div class="field"><label>항목명</label><input type="text" id="i-mgmt-name" placeholder="예: 관리비, 전기세" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="i-mgmt-amt" placeholder="0" inputmode="numeric"></div>
+    <div id="gmgmt" style="display:none">
+      <div class="fd"><label>연월</label><input type="month" id="immgmt"></div>
+      <div class="fd"><label>항목명</label><input type="text" id="imname" placeholder="예: 관리비, 전기세" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="imamt" placeholder="0" inputmode="numeric"></div>
     </div>
-    <div id="g-bk" style="display:none">
-      <div class="field"><label>연월</label><input type="month" id="i-month-bk"></div>
-      <div class="field"><label>세무사명 / 기장 항목</label><input type="text" id="i-bk-name" placeholder="예: 홍세무사 기장비" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="i-bk-amt" placeholder="0" inputmode="numeric"></div>
+    <div id="gbk" style="display:none">
+      <div class="fd"><label>연월</label><input type="month" id="imbk"></div>
+      <div class="fd"><label>세무사명/항목</label><input type="text" id="ibname" placeholder="예: 홍세무사 기장비" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="ibamt" placeholder="0" inputmode="numeric"></div>
     </div>
-    <div id="g-tax" style="display:none">
-      <div class="field"><label>납부일</label><input type="date" id="i-tax-date"></div>
-      <div class="field"><label>국세 / 지방세</label><select id="i-tax-kind"><option value="국세">국세</option><option value="지방세">지방세</option></select></div>
-      <div class="field"><label>세목 (예: 종합소득세, 부가가치세)</label><input type="text" id="i-tax-name" placeholder="직접 입력" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="i-tax-amt" placeholder="0" inputmode="numeric"></div>
+    <div id="gtax" style="display:none">
+      <div class="fd"><label>납부일</label><input type="date" id="itdate"></div>
+      <div class="fd"><label>국세 / 지방세</label><select id="itkind"><option value="국세">국세</option><option value="지방세">지방세</option></select></div>
+      <div class="fd"><label>세목 (예: 종합소득세, 부가가치세)</label><input type="text" id="itname" placeholder="직접 입력" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="itamt" placeholder="0" inputmode="numeric"></div>
     </div>
-    <button class="save-btn" onclick="saveEntry()">저장</button>
+    <button class="sbtn2" onclick="doSave()">저장</button>
   </div>
 </div>
 
 <!-- 내역 -->
-<div id="s-history" class="screen">
-  <div class="pbar">
-    <input type="month" id="hf"><span>~</span><input type="month" id="ht">
-    <button onclick="renderHistory()">조회</button>
-  </div>
+<div id="s-history" class="sc">
+  <div class="pb"><input type="month" id="hf"><span>~</span><input type="month" id="ht"><button onclick="rHist()">조회</button></div>
   <div style="display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap">
-    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:#fff;color:var(--text);border:0.5px solid var(--border)" onclick="filterHistory('')">전체</button>
-    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--green-light);color:var(--green);border:none" onclick="filterHistory('inc')">수입</button>
-    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--amber-light);color:var(--amber);border:none" onclick="filterHistory('sal')">급여</button>
-    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--red-light);color:var(--red);border:none" onclick="filterHistory('rent')">월세</button>
-    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--amber-light);color:var(--amber);border:none" onclick="filterHistory('mgmt')">관리비</button>
-    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--purple-light);color:var(--purple);border:none" onclick="filterHistory('bk')">기장비</button>
-    <button class="qbtn" style="font-size:11px;padding:6px 9px;background:var(--blue-light);color:var(--blue);border:none" onclick="filterHistory('tax')">세금</button>
+    <button class="qb" style="font-size:11px;padding:6px 9px;background:#fff;color:var(--tx);border:0.5px solid var(--bd)" onclick="hf2('')">전체</button>
+    <button class="qb" style="font-size:11px;padding:6px 9px;background:var(--gnl);color:var(--gn);border:none" onclick="hf2('inc')">수입</button>
+    <button class="qb" style="font-size:11px;padding:6px 9px;background:var(--aml);color:var(--am);border:none" onclick="hf2('sal')">급여</button>
+    <button class="qb" style="font-size:11px;padding:6px 9px;background:var(--rdl);color:var(--rd);border:none" onclick="hf2('rent')">월세</button>
+    <button class="qb" style="font-size:11px;padding:6px 9px;background:var(--aml);color:var(--am);border:none" onclick="hf2('mgmt')">관리비</button>
+    <button class="qb" style="font-size:11px;padding:6px 9px;background:var(--ppl);color:var(--pp);border:none" onclick="hf2('bk')">기장비</button>
+    <button class="qb" style="font-size:11px;padding:6px 9px;background:var(--bll);color:var(--bl);border:none" onclick="hf2('tax')">세금</button>
   </div>
-  <div id="history-list"></div>
+  <div id="hlist"></div>
 </div>
 
 <!-- 학원별 -->
-<div id="s-byac" class="screen">
-  <div class="pbar">
-    <input type="month" id="bf"><span>~</span><input type="month" id="bt">
-    <button onclick="renderByAc()">조회</button>
-  </div>
-  <div class="ac-tabs" id="byac-tabs"></div>
-  <div id="byac-content"></div>
+<div id="s-byac" class="sc">
+  <div class="pb"><input type="month" id="bf"><span>~</span><input type="month" id="bt"><button onclick="rByac()">조회</button></div>
+  <div class="ats" id="atabs"></div>
+  <div id="acont"></div>
 </div>
 
 <!-- 설정 -->
-<div id="s-dl" class="screen">
+<div id="s-set" class="sc">
   <div class="card">
-    <div class="stitle" style="margin-top:0">기간 선택 후 다운로드</div>
-    <div class="field"><label>시작 연월</label><input type="month" id="dl-f"></div>
-    <div class="field"><label>종료 연월</label><input type="month" id="dl-t"></div>
-    <button class="dl-btn" onclick="downloadCSV()">
-      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV 다운로드 (엑셀에서 열기)
-    </button>
-    <button class="dl-btn" onclick="downloadJSON()">
-      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>전체 백업 (JSON)
-    </button>
-    <button class="dl-btn" onclick="document.getElementById('restore-file').click()">
-      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3" transform="rotate(180 12 12)"/></svg>백업 복원 (JSON)
-    </button>
-    <input type="file" id="restore-file" accept=".json" style="display:none" onchange="restoreJSON(this)">
+    <div class="st" style="margin-top:0">기간 선택 후 다운로드</div>
+    <div class="fd"><label>시작 연월</label><input type="month" id="dlf"></div>
+    <div class="fd"><label>종료 연월</label><input type="month" id="dlt"></div>
+    <button class="dlb" onclick="dlCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV 다운로드 (엑셀에서 열기)</button>
+    <button class="dlb" onclick="dlJSON()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>전체 백업 (JSON)</button>
+    <button class="dlb" onclick="document.getElementById('rfile').click()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3" transform="rotate(180 12 12)"/></svg>백업 복원</button>
+    <input type="file" id="rfile" accept=".json" style="display:none" onchange="doRestore(this)">
   </div>
-
   <div class="card">
-    <div class="stitle" style="margin-top:0">구글 시트 연동 — 기기 간 공유</div>
-    <div class="warn-box">
-      ⚠️ <b>동기화 방식 안내</b><br>
-      • 구글 시트 = 모든 기기의 기준 데이터<br>
-      • <b>동기화 버튼</b>: 구글 시트에서 최신 데이터 불러오기<br>
-      • 입력/수정/삭제 즉시 구글 시트에 자동 저장<br>
-      • 여러 기기 사용 시: 한 기기에서 입력 후 다른 기기에서 동기화 버튼 클릭
+    <div class="st" style="margin-top:0">구글 시트 연동</div>
+    <div class="wb">
+      ⚠️ <b>동기화 방식</b><br>
+      • 입력·수정·삭제 즉시 구글 시트 자동 저장<br>
+      • 동기화 버튼 = 구글 시트 최신 데이터 불러오기<br>
+      • 여러 기기: 한 기기 입력 → 다른 기기 동기화 버튼
     </div>
-    <div class="gs-box">
-      <div class="gs-title">설정 방법</div>
-      <div class="gs-desc">
-        1. 구글 스프레드시트 → 확장 프로그램 → Apps Script<br>
-        2. 코드 붙여넣기 → 저장 → 배포 → 새 배포<br>
-        3. 유형: 웹앱 / 액세스: 모든 사용자 → 배포<br>
-        4. URL 아래에 입력 → 연동 저장
-      </div>
+    <div class="fd"><label>Google Apps Script URL</label>
+      <input type="text" id="gsurl" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:12px">
     </div>
-    <div class="field"><label>Google Apps Script URL</label>
-      <input type="text" id="gs-url" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:12px">
-    </div>
-    <button class="save-btn" style="background:var(--green)" onclick="saveGsUrl()">연동 저장</button>
-    <div class="prog-box" id="sync-progress"></div>
+    <button class="sbtn2" style="background:var(--gn)" onclick="saveUrl()">연동 저장</button>
+    <div class="pg" id="spg"></div>
   </div>
-
   <div class="card">
-    <div class="stitle" style="margin-top:0">구글 시트 초기화</div>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.7">
-      데이터가 꼬였을 때 사용하세요.<br>
-      현재 이 기기의 데이터를 구글 시트에 완전히 덮어씁니다.
-    </div>
-    <button class="save-btn" style="background:var(--red)" onclick="forceOverwrite()">이 기기 데이터로 구글 시트 초기화</button>
-    <div class="prog-box" id="overwrite-progress"></div>
+    <div class="st" style="margin-top:0">구글 시트 초기화</div>
+    <div style="font-size:12px;color:var(--t2);margin-bottom:10px;line-height:1.7">데이터가 꼬였을 때 사용.<br>이 기기 데이터를 구글 시트에 완전히 덮어씁니다.</div>
+    <button class="sbtn2" style="background:var(--rd)" onclick="forceOW()">이 기기 데이터로 구글 시트 초기화</button>
+    <div class="pg" id="owpg"></div>
   </div>
-
   <div class="card">
-    <div class="stitle" style="margin-top:0">학원 관리</div>
-    <div class="field"><label>학원 이름</label><input type="text" id="ac-name-input" placeholder="예: 생각키움 김포본원" lang="ko" inputmode="text"></div>
-    <button class="save-btn" style="background:var(--gray)" onclick="addAcademy()">학원 추가</button>
-    <div class="stitle">등록된 학원</div>
-    <div id="ac-chips"></div>
+    <div class="st" style="margin-top:0">학원 관리</div>
+    <div class="fd"><label>학원 이름</label><input type="text" id="acni" placeholder="예: 장기동(생각키움)" lang="ko"></div>
+    <button class="sbtn2" style="background:var(--gy)" onclick="addAc()">학원 추가</button>
+    <div class="st">등록된 학원</div>
+    <div id="achips"></div>
   </div>
 </div>
 
 <!-- 하단 탭 -->
-<div class="tabbar">
-  <button class="tb on" onclick="go('home',this)">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈
-  </button>
-  <button class="tb" onclick="go('input',this)">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>입력
-  </button>
-  <button class="tb" onclick="go('history',this)">
-    <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>내역
-  </button>
-  <button class="tb" onclick="go('byac',this)">
-    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>학원별
-  </button>
-  <button class="tb" onclick="go('dl',this)">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>설정
-  </button>
+<div class="tbr">
+  <button class="tb on" onclick="go('home',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈</button>
+  <button class="tb" onclick="go('input',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>입력</button>
+  <button class="tb" onclick="go('history',this)"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>내역</button>
+  <button class="tb" onclick="go('byac',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>학원별</button>
+  <button class="tb" onclick="go('set',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>설정</button>
 </div>
 
 <!-- 수정 모달 -->
-<div class="modal-wrap" id="edit-modal" onclick="closeModal(event)">
-  <div class="modal">
-    <div class="modal-title">
-      <span id="edit-modal-title">내역 수정</span>
-      <button class="modal-close" onclick="closeEditModal()">×</button>
+<div class="mw" id="emod" onclick="cmod(event)">
+  <div class="md">
+    <div class="mdt"><span id="emtitle">수정</span><button class="mdc" onclick="closeEM()">×</button></div>
+    <div id="em-inc">
+      <div class="mr"><div class="fd"><label>연월</label><input type="month" id="em-minc"></div><div class="fd"><label>학원</label><select id="em-ac-inc"></select></div></div>
+      <div class="fd"><label>항목명</label><input type="text" id="em-iname" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="em-iamt" inputmode="numeric"></div>
     </div>
-    <div id="edit-g-inc">
-      <div class="modal-row">
-        <div class="field"><label>연월</label><input type="month" id="e-month-inc"></div>
-        <div class="field"><label>학원</label><select id="e-ac-inc"></select></div>
-      </div>
-      <div class="field"><label>항목명</label><input type="text" id="e-inc-name" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="e-inc-amt" inputmode="numeric"></div>
+    <div id="em-sal" style="display:none">
+      <div class="mr"><div class="fd"><label>연월</label><input type="month" id="em-msal"></div><div class="fd"><label>학원</label><select id="em-ac-sal"></select></div></div>
+      <div class="fd"><label>강사 이름</label><input type="text" id="em-sname" lang="ko"></div>
+      <div class="fd"><label>지급액</label><input type="number" id="em-samt" inputmode="numeric" oninput="cEsal()"></div>
+      <div class="fd"><label>원천징수율(%)</label><input type="number" id="em-srate" value="3.3" step="0.1" oninput="cEsal()"></div>
+      <div id="em-spv" class="pv"></div>
     </div>
-    <div id="edit-g-sal" style="display:none">
-      <div class="modal-row">
-        <div class="field"><label>연월</label><input type="month" id="e-month-sal"></div>
-        <div class="field"><label>학원</label><select id="e-ac-sal"></select></div>
-      </div>
-      <div class="field"><label>강사 이름</label><input type="text" id="e-sal-name" lang="ko" inputmode="text"></div>
-      <div class="field"><label>지급액</label><input type="number" id="e-sal-amt" inputmode="numeric" oninput="calcEditSal()"></div>
-      <div class="field"><label>원천징수율 (%)</label><input type="number" id="e-sal-rate" value="3.3" step="0.1" inputmode="decimal" oninput="calcEditSal()"></div>
-      <div id="edit-sal-preview" class="preview"></div>
+    <div id="em-rent" style="display:none">
+      <div class="mr"><div class="fd"><label>연월</label><input type="month" id="em-mrent"></div><div class="fd"><label>학원</label><select id="em-ac-rent"></select></div></div>
+      <div class="fd"><label>항목명</label><input type="text" id="em-rname" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="em-ramt" inputmode="numeric"></div>
     </div>
-    <div id="edit-g-rent" style="display:none">
-      <div class="modal-row">
-        <div class="field"><label>연월</label><input type="month" id="e-month-rent"></div>
-        <div class="field"><label>학원</label><select id="e-ac-rent"></select></div>
-      </div>
-      <div class="field"><label>항목명</label><input type="text" id="e-rent-name" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="e-rent-amt" inputmode="numeric"></div>
+    <div id="em-mgmt" style="display:none">
+      <div class="mr"><div class="fd"><label>연월</label><input type="month" id="em-mmgmt"></div><div class="fd"><label>학원</label><select id="em-ac-mgmt"></select></div></div>
+      <div class="fd"><label>항목명</label><input type="text" id="em-mname" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="em-mamt" inputmode="numeric"></div>
     </div>
-    <div id="edit-g-mgmt" style="display:none">
-      <div class="modal-row">
-        <div class="field"><label>연월</label><input type="month" id="e-month-mgmt"></div>
-        <div class="field"><label>학원</label><select id="e-ac-mgmt"></select></div>
-      </div>
-      <div class="field"><label>항목명</label><input type="text" id="e-mgmt-name" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="e-mgmt-amt" inputmode="numeric"></div>
+    <div id="em-bk" style="display:none">
+      <div class="mr"><div class="fd"><label>연월</label><input type="month" id="em-mbk"></div><div class="fd"><label>학원</label><select id="em-ac-bk"></select></div></div>
+      <div class="fd"><label>세무사명/항목</label><input type="text" id="em-bname" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="em-bamt" inputmode="numeric"></div>
     </div>
-    <div id="edit-g-bk" style="display:none">
-      <div class="modal-row">
-        <div class="field"><label>연월</label><input type="month" id="e-month-bk"></div>
-        <div class="field"><label>학원</label><select id="e-ac-bk"></select></div>
-      </div>
-      <div class="field"><label>세무사명/항목</label><input type="text" id="e-bk-name" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="e-bk-amt" inputmode="numeric"></div>
+    <div id="em-tax" style="display:none">
+      <div class="fd"><label>납부일</label><input type="date" id="em-tdate"></div>
+      <div class="fd"><label>국세/지방세</label><select id="em-tkind"><option value="국세">국세</option><option value="지방세">지방세</option></select></div>
+      <div class="fd"><label>세목</label><input type="text" id="em-tname" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="em-tamt" inputmode="numeric"></div>
     </div>
-    <div id="edit-g-tax" style="display:none">
-      <div class="field"><label>납부일</label><input type="date" id="e-tax-date"></div>
-      <div class="field"><label>국세 / 지방세</label><select id="e-tax-kind"><option value="국세">국세</option><option value="지방세">지방세</option></select></div>
-      <div class="field"><label>세목</label><input type="text" id="e-tax-name" lang="ko" inputmode="text"></div>
-      <div class="field"><label>금액</label><input type="number" id="e-tax-amt" inputmode="numeric"></div>
-    </div>
-    <button class="save-btn" onclick="saveEdit()">수정 완료</button>
-    <button class="save-btn" style="background:#fff;color:var(--red);border:0.5px solid var(--red);margin-top:8px" onclick="deleteFromModal()">이 내역 삭제</button>
+    <button class="sbtn2" onclick="doEdit()">수정 완료</button>
+    <button class="sbtn2" style="background:#fff;color:var(--rd);border:0.5px solid var(--rd);margin-top:8px" onclick="delFromMod()">삭제</button>
   </div>
 </div>
 
 <script>
 'use strict';
-const LKEY='acmgr_v6';
-let db={academies:[],entries:[],gsUrl:''};
-let curType='inc';
-let histFilter='';
-let byacAcId='all';
-let editId=null;
-let idb=null;
-let isSyncing=false; // 동기화 중복 실행 방지
+/* ═══════════ 상수 & 상태 ═══════════ */
+const VER='v7';
+const LKEY='acmgr_'+VER;
+let db={acs:[],rows:[],url:''};
+let ctype='inc', hflt='', bacid='all', eid=null, syncing=false;
 
-/* ══════════════════════════════════════
-   저장 / 로드 — 월별 분할 저장
-══════════════════════════════════════ */
+/* ═══════════ KST 날짜 ═══════════ */
+function kstYM(){const d=new Date(),k=new Date(d.getTime()+9*3600000);return k.toISOString().slice(0,7)}
+function kstD(){const d=new Date(),k=new Date(d.getTime()+9*3600000);return k.toISOString().slice(0,10)}
+// month 필드 정규화: ISO datetime → KST YYYY-MM
+function normM(m){
+  if(!m)return '';
+  m=String(m);
+  if(m.length>7&&m.includes('T')){
+    const k=new Date(new Date(m).getTime()+9*3600000);
+    return k.toISOString().slice(0,7);
+  }
+  return m.slice(0,7);
+}
+// 전체 entries month 정규화
+function normAll(){db.rows.forEach(r=>{r.month=normM(r.month)})}
+
+/* ═══════════ 저장/로드 ═══════════ */
 function save(){
   try{
-    localStorage.setItem(LKEY+'_meta',JSON.stringify({
-      academies:db.academies,gsUrl:db.gsUrl||'',v:6,savedAt:Date.now()
-    }));
+    localStorage.setItem(LKEY+'_m',JSON.stringify({acs:db.acs,url:db.url,v:7}));
     const byM={};
-    db.entries.forEach(e=>{
-      const k=(e.month||'0000-00').slice(0,7);
-      (byM[k]=byM[k]||[]).push(e);
-    });
-    Object.keys(localStorage).filter(k=>k.startsWith(LKEY+'_m_')).forEach(k=>localStorage.removeItem(k));
-    Object.entries(byM).forEach(([m,arr])=>localStorage.setItem(LKEY+'_m_'+m,JSON.stringify(arr)));
-    localStorage.setItem(LKEY+'_idx',JSON.stringify(Object.keys(byM)));
-    idbSave(JSON.stringify(db));
-  }catch(e){console.warn('save err',e)}
+    db.rows.forEach(r=>{const k=r.month||'0000-00';(byM[k]=byM[k]||[]).push(r)});
+    Object.keys(localStorage).filter(k=>k.startsWith(LKEY+'_r_')).forEach(k=>localStorage.removeItem(k));
+    Object.entries(byM).forEach(([m,a])=>localStorage.setItem(LKEY+'_r_'+m,JSON.stringify(a)));
+    localStorage.setItem(LKEY+'_i',JSON.stringify(Object.keys(byM)));
+  }catch(e){console.warn(e)}
 }
-
 function load(){
   try{
-    const meta=localStorage.getItem(LKEY+'_meta');
-    const idx=localStorage.getItem(LKEY+'_idx');
-    if(meta&&idx){
-      const m=JSON.parse(meta);
-      const ix=JSON.parse(idx);
-      let entries=[];
-      ix.forEach(k=>{
-        try{const c=localStorage.getItem(LKEY+'_m_'+k);if(c)entries=entries.concat(JSON.parse(c))}catch(e){}
-      });
-      db={academies:m.academies||[],entries,gsUrl:m.gsUrl||''};
+    const m=localStorage.getItem(LKEY+'_m');
+    const i=localStorage.getItem(LKEY+'_i');
+    if(m&&i){
+      const md=JSON.parse(m);
+      let rows=[];
+      JSON.parse(i).forEach(k=>{try{const c=localStorage.getItem(LKEY+'_r_'+k);if(c)rows=rows.concat(JSON.parse(c))}catch(e){}});
+      db={acs:md.acs||[],rows,url:md.url||''};
+      normAll();
       return;
     }
-    // 구버전 호환
-    for(const key of['acmgr_v5','acmgr_v4','acmgr_v3']){
-      const old=localStorage.getItem(key);
-      if(old){try{db=JSON.parse(old);save();return}catch(e){}}
+    // 구버전 마이그레이션
+    for(const k of['acmgr_v6_meta','acmgr_v5_meta','acmgr_v4']){
+      const d=localStorage.getItem(k);
+      if(d){try{const p=JSON.parse(d);if(p.academies||p.entries){db={acs:p.academies||[],rows:p.entries||[],url:p.gsUrl||''};normAll();save();return}}catch(e){}}
     }
-  }catch(e){console.warn('load err',e)}
-  idbLoad();
+  }catch(e){console.warn(e)}
 }
 
-function idbOpen(){return new Promise(res=>{const r=indexedDB.open('acmgr',1);r.onupgradeneeded=e=>e.target.result.createObjectStore('kv');r.onsuccess=e=>{idb=e.target.result;res(idb)};r.onerror=()=>res(null)})}
-async function idbSave(json){if(!idb)await idbOpen();if(!idb)return;try{idb.transaction('kv','readwrite').objectStore('kv').put(json,'db')}catch(e){}}
-async function idbLoad(){if(!idb)await idbOpen();if(!idb)return;try{const r=idb.transaction('kv','readonly').objectStore('kv').get('db');r.onsuccess=e=>{if(e.target.result){try{db=JSON.parse(e.target.result);renderAll()}catch(er){}}}}catch(e){}}
-
-/* ══════════════════════════════════════
-   유틸
-══════════════════════════════════════ */
+/* ═══════════ 유틸 ═══════════ */
 const W=n=>'₩'+Math.round(n||0).toLocaleString('ko-KR');
-// KST(한국시간) 기준 현재 연월 반환
-function kstNow(){
-  const d=new Date();
-  // UTC+9 보정
-  const kst=new Date(d.getTime()+9*60*60*1000);
-  return kst.toISOString().slice(0,7);
-}
-const now=()=>kstNow();
-function kstToday(){
-  const d=new Date();
-  const kst=new Date(d.getTime()+9*60*60*1000);
-  return kst.toISOString().slice(0,10);
-}
-const today=()=>kstToday();
-function toast(msg,dur=1800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur)}
-function setSyncLabel(t){const el=document.getElementById('sync-label');if(el)el.textContent=t}
-function setConn(on){document.getElementById('conn-dot').className='conn-dot '+(on?'on':'off');document.getElementById('conn-txt').textContent=on?'구글시트연동':'로컬저장'}
-function showProg(elId,msg){const el=document.getElementById(elId);if(el){el.style.display='block';el.textContent=msg}}
-function hideProg(elId,msg,ms=3000){const el=document.getElementById(elId);if(el){el.textContent=msg||'';if(ms>0)setTimeout(()=>{el.style.display='none'},ms)}}
+function toast(msg,d=1800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),d)}
+function setC(on){document.getElementById('cdot').className='cdot '+(on?'on':'off');document.getElementById('ctxt').textContent=on?'구글시트연동':'로컬저장'}
+function setSL(t){const e=document.getElementById('slbl');if(e)e.textContent=t}
+function pg(id,msg){const e=document.getElementById(id);if(e){e.style.display='block';e.textContent=msg}}
+function hpg(id,msg,ms=4000){const e=document.getElementById(id);if(e){e.textContent=msg||'';setTimeout(()=>{if(e)e.style.display='none'},ms)}}
+function uid(){return Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
 
-/* ══════════════════════════════════════
-   탭 전환
-══════════════════════════════════════ */
-function go(name,btn){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('s-'+name).classList.add('on');
-  btn.classList.add('on');
-  if(name==='home')calcDash();
-  if(name==='history')renderHistory();
-  if(name==='byac')renderByAc();
-  if(name==='dl'){renderAcChips();document.getElementById('gs-url').value=db.gsUrl||''}
-  if(name==='input')refreshAcSelect();
+/* ═══════════ 탭 ═══════════ */
+function go(n,b){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));
+  document.getElementById('s-'+n).classList.add('on');b.classList.add('on');
+  if(n==='home')dash();
+  if(n==='history')rHist();
+  if(n==='byac')rByac();
+  if(n==='set'){rChips();document.getElementById('gsurl').value=db.url||''}
+  if(n==='input')rAcSel();
+}
+function stype(t,b){
+  ctype=t;
+  document.querySelectorAll('.tt').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  ['inc','sal','rent','mgmt','bk','tax'].forEach(x=>document.getElementById('g'+x).style.display=x===t?'block':'none');
+  document.getElementById('fac').style.display=t==='tax'?'none':'block';
 }
 
-function setType(t,btn){
-  curType=t;
-  document.querySelectorAll('.type-tab').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  ['inc','sal','rent','mgmt','bk','tax'].forEach(x=>document.getElementById('g-'+x).style.display=x===t?'block':'none');
-  document.getElementById('f-ac').style.display=t==='tax'?'none':'block';
+/* ═══════════ 급여 미리보기 ═══════════ */
+function csal(){
+  const a=parseFloat(document.getElementById('isamt').value)||0;
+  const r=parseFloat(document.getElementById('israte').value)||3.3;
+  const p=document.getElementById('spv');
+  if(a){p.style.display='block';p.textContent=`공제 ${W(Math.round(a*r/100))} → 실지급 ${W(a-Math.round(a*r/100))}`}else p.style.display='none';
+}
+function cEsal(){
+  const a=parseFloat(document.getElementById('em-samt').value)||0;
+  const r=parseFloat(document.getElementById('em-srate').value)||3.3;
+  const p=document.getElementById('em-spv');
+  if(a){p.style.display='block';p.textContent=`공제 ${W(Math.round(a*r/100))} → 실지급 ${W(a-Math.round(a*r/100))}`}else p.style.display='none';
 }
 
-/* ══════════════════════════════════════
-   급여 미리보기
-══════════════════════════════════════ */
-function calcSal(){
-  const amt=parseFloat(document.getElementById('i-sal-amt').value)||0;
-  const rate=parseFloat(document.getElementById('i-sal-rate').value)||3.3;
-  const tax=Math.round(amt*rate/100);
-  const p=document.getElementById('sal-preview');
-  if(amt){p.style.display='block';p.textContent=`공제 ${W(tax)} → 실지급 ${W(amt-tax)}`}else p.style.display='none';
+/* ═══════════ 학원 셀렉트 ═══════════ */
+function rAcSel(){
+  const s=document.getElementById('iac');
+  s.innerHTML=db.acs.length?db.acs.map(a=>`<option value="${a.id}">${a.name}</option>`).join(''):'<option value="">학원을 먼저 등록하세요</option>';
 }
-function calcEditSal(){
-  const amt=parseFloat(document.getElementById('e-sal-amt').value)||0;
-  const rate=parseFloat(document.getElementById('e-sal-rate').value)||3.3;
-  const tax=Math.round(amt*rate/100);
-  const p=document.getElementById('edit-sal-preview');
-  if(amt){p.style.display='block';p.textContent=`공제 ${W(tax)} → 실지급 ${W(amt-tax)}`}else p.style.display='none';
+function fillSel(id){
+  const s=document.getElementById(id);
+  if(s)s.innerHTML=db.acs.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
 }
 
-/* ══════════════════════════════════════
-   학원 셀렉트
-══════════════════════════════════════ */
-function refreshAcSelect(){
-  const sel=document.getElementById('i-ac');
-  sel.innerHTML=db.academies.length
-    ?db.academies.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')
-    :'<option value="">먼저 학원을 등록하세요</option>';
-}
-function fillAcSelect(id){
-  const sel=document.getElementById(id);
-  if(sel)sel.innerHTML=db.academies.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
-}
+/* ═══════════ 저장 ═══════════ */
+function doSave(){
+  const acid=document.getElementById('iac').value;
+  const acnm=db.acs.find(a=>a.id===acid)?.name||'';
+  const t=ctype;
+  let row={id:uid(),type:t,acId:acid,acName:acnm,ts:Date.now()};
 
-/* ══════════════════════════════════════
-   고유 ID 생성
-══════════════════════════════════════ */
-function genId(){
-  const t=Date.now().toString(36);
-  const r=Math.random().toString(36).slice(2,9);
-  const p=(typeof performance!=='undefined'?(performance.now()*1000|0):0).toString(36);
-  return t+'_'+r+'_'+p;
-}
-
-/* ══════════════════════════════════════
-   저장 (로컬 + 구글시트 자동 push)
-══════════════════════════════════════ */
-function saveAndPush(){
-  save();
-  pushToSheet(); // 백그라운드 실행, await 안 함
-}
-
-/* ══════════════════════════════════════
-   입력 저장
-══════════════════════════════════════ */
-function saveEntry(){
-  const acId=document.getElementById('i-ac').value;
-  const acName=db.academies.find(a=>a.id===acId)?.name||'';
-  const type=curType;
-  let entry={id:genId(),type,acId,acName,ts:Date.now()};
-
-  if(type==='inc'){
-    const month=document.getElementById('i-month-inc').value;
-    const name=document.getElementById('i-inc-name').value.trim();
-    const amt=parseFloat(document.getElementById('i-inc-amt').value)||0;
-    if(!acId){toast('학원을 먼저 등록하세요');return}
-    if(!month||!name||!amt){toast('연월, 항목, 금액을 모두 입력하세요');return}
-    Object.assign(entry,{month,name,amount:amt});
-    document.getElementById('i-inc-name').value='';document.getElementById('i-inc-amt').value='';
-  }else if(type==='sal'){
-    const month=document.getElementById('i-month-sal').value;
-    const name=document.getElementById('i-sal-name').value.trim();
-    const amt=parseFloat(document.getElementById('i-sal-amt').value)||0;
-    const rate=parseFloat(document.getElementById('i-sal-rate').value)||3.3;
-    if(!acId){toast('학원을 먼저 등록하세요');return}
-    if(!month||!name||!amt){toast('연월, 이름, 금액을 모두 입력하세요');return}
-    const taxAmt=Math.round(amt*rate/100);
-    Object.assign(entry,{month,name,amount:amt,rate,taxAmt,net:amt-taxAmt});
-    document.getElementById('i-sal-name').value='';document.getElementById('i-sal-amt').value='';document.getElementById('sal-preview').style.display='none';
-  }else if(type==='rent'){
-    const month=document.getElementById('i-month-rent').value;
-    const name=document.getElementById('i-rent-name').value.trim();
-    const amt=parseFloat(document.getElementById('i-rent-amt').value)||0;
-    if(!acId){toast('학원을 먼저 등록하세요');return}
-    if(!month||!amt){toast('연월과 금액을 입력하세요');return}
-    Object.assign(entry,{month,name:name||'월세',amount:amt});
-    document.getElementById('i-rent-name').value='';document.getElementById('i-rent-amt').value='';
-  }else if(type==='mgmt'){
-    const month=document.getElementById('i-month-mgmt').value;
-    const name=document.getElementById('i-mgmt-name').value.trim();
-    const amt=parseFloat(document.getElementById('i-mgmt-amt').value)||0;
-    if(!acId){toast('학원을 먼저 등록하세요');return}
-    if(!month||!amt){toast('연월과 금액을 입력하세요');return}
-    Object.assign(entry,{month,name:name||'관리비',amount:amt});
-    document.getElementById('i-mgmt-name').value='';document.getElementById('i-mgmt-amt').value='';
-  }else if(type==='bk'){
-    const month=document.getElementById('i-month-bk').value;
-    const name=document.getElementById('i-bk-name').value.trim();
-    const amt=parseFloat(document.getElementById('i-bk-amt').value)||0;
-    if(!acId){toast('학원을 먼저 등록하세요');return}
-    if(!month||!amt){toast('연월과 금액을 입력하세요');return}
-    Object.assign(entry,{month,name:name||'기장비',amount:amt});
-    document.getElementById('i-bk-name').value='';document.getElementById('i-bk-amt').value='';
-  }else if(type==='tax'){
-    const date=document.getElementById('i-tax-date').value;
-    const kind=document.getElementById('i-tax-kind').value;
-    const name=document.getElementById('i-tax-name').value.trim();
-    const amt=parseFloat(document.getElementById('i-tax-amt').value)||0;
-    if(!date||!name||!amt){toast('날짜, 세목, 금액을 모두 입력하세요');return}
-    Object.assign(entry,{month:date.slice(0,7),date,kind,name,amount:amt,acId:'',acName:''});
-    document.getElementById('i-tax-name').value='';document.getElementById('i-tax-amt').value='';
+  if(t==='inc'){
+    const m=document.getElementById('iminc').value;
+    const n=document.getElementById('iname').value.trim();
+    const a=parseFloat(document.getElementById('iamt').value)||0;
+    if(!acid){toast('학원을 먼저 등록하세요');return}
+    if(!m||!n||!a){toast('연월, 항목, 금액을 모두 입력하세요');return}
+    Object.assign(row,{month:m,name:n,amount:a});
+    document.getElementById('iname').value='';document.getElementById('iamt').value='';
+  }else if(t==='sal'){
+    const m=document.getElementById('imsal').value;
+    const n=document.getElementById('isname').value.trim();
+    const a=parseFloat(document.getElementById('isamt').value)||0;
+    const r=parseFloat(document.getElementById('israte').value)||3.3;
+    if(!acid){toast('학원을 먼저 등록하세요');return}
+    if(!m||!n||!a){toast('연월, 이름, 금액을 모두 입력하세요');return}
+    const tx=Math.round(a*r/100);
+    Object.assign(row,{month:m,name:n,amount:a,rate:r,taxAmt:tx,net:a-tx});
+    document.getElementById('isname').value='';document.getElementById('isamt').value='';document.getElementById('spv').style.display='none';
+  }else if(t==='rent'){
+    const m=document.getElementById('imrent').value;
+    const n=document.getElementById('irname').value.trim();
+    const a=parseFloat(document.getElementById('iramt').value)||0;
+    if(!acid){toast('학원을 먼저 등록하세요');return}
+    if(!m||!a){toast('연월과 금액을 입력하세요');return}
+    Object.assign(row,{month:m,name:n||'월세',amount:a});
+    document.getElementById('irname').value='';document.getElementById('iramt').value='';
+  }else if(t==='mgmt'){
+    const m=document.getElementById('immgmt').value;
+    const n=document.getElementById('imname').value.trim();
+    const a=parseFloat(document.getElementById('imamt').value)||0;
+    if(!acid){toast('학원을 먼저 등록하세요');return}
+    if(!m||!a){toast('연월과 금액을 입력하세요');return}
+    Object.assign(row,{month:m,name:n||'관리비',amount:a});
+    document.getElementById('imname').value='';document.getElementById('imamt').value='';
+  }else if(t==='bk'){
+    const m=document.getElementById('imbk').value;
+    const n=document.getElementById('ibname').value.trim();
+    const a=parseFloat(document.getElementById('ibamt').value)||0;
+    if(!acid){toast('학원을 먼저 등록하세요');return}
+    if(!m||!a){toast('연월과 금액을 입력하세요');return}
+    Object.assign(row,{month:m,name:n||'기장비',amount:a});
+    document.getElementById('ibname').value='';document.getElementById('ibamt').value='';
+  }else if(t==='tax'){
+    const dt=document.getElementById('itdate').value;
+    const kd=document.getElementById('itkind').value;
+    const n=document.getElementById('itname').value.trim();
+    const a=parseFloat(document.getElementById('itamt').value)||0;
+    if(!dt||!n||!a){toast('날짜, 세목, 금액을 모두 입력하세요');return}
+    Object.assign(row,{month:dt.slice(0,7),date:dt,kind:kd,name:n,amount:a,acId:'',acName:''});
+    document.getElementById('itname').value='';document.getElementById('itamt').value='';
   }
 
-  db.entries.push(entry);
-  saveAndPush();
+  db.rows.push(row);
+  save();push();
   toast('저장되었습니다');
 }
 
-/* ══════════════════════════════════════
-   대시보드
-══════════════════════════════════════ */
-function calcDash(){
+/* ═══════════ 대시보드 ═══════════ */
+function dash(){
   const f=document.getElementById('pf').value;
   const t=document.getElementById('pt').value;
-  const ok=e=>{
-  let m=e.month||'';
-  if(m.length>7&&m.includes('T')){
-    const dt=new Date(m);
-    const kst=new Date(dt.getTime()+9*60*60*1000);
-    m=kst.toISOString().slice(0,7);
-    e.month=m;
-  }else{
-    m=m.slice(0,7);
-    if(m)e.month=m;
-  }
-  return(!f||m>=f)&&(!t||m<=t);
-};
-  const sum=type=>db.entries.filter(e=>e.type===type&&ok(e)).reduce((s,e)=>s+(Number(e.amount)||0),0);
-  const inc=sum('inc'),sal=sum('sal'),rent=sum('rent'),mgmt=sum('mgmt'),bk=sum('bk'),tax=sum('tax');
+  const ok=r=>{const m=r.month||'';return(!f||m>=f)&&(!t||m<=t)};
+  const sm=tp=>db.rows.filter(r=>r.type===tp&&ok(r)).reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const inc=sm('inc'),sal=sm('sal'),rent=sm('rent'),mgmt=sm('mgmt'),bk=sm('bk'),tax=sm('tax');
   const net=inc-sal-rent-mgmt-bk-tax;
-  document.getElementById('d-inc').textContent=W(inc);
-  document.getElementById('d-sal').textContent=W(sal);
-  document.getElementById('d-rent').textContent=W(rent);
-  document.getElementById('d-mgmt').textContent=W(mgmt);
-  document.getElementById('d-bk').textContent=W(bk);
-  document.getElementById('d-tax').textContent=W(tax);
-  const nEl=document.getElementById('d-net');nEl.textContent=W(net);nEl.style.color=net>=0?'var(--green)':'var(--red)';
-  const acEl=document.getElementById('d-ac-list');
-  if(!db.academies.length){acEl.innerHTML='<div class="empty">학원을 먼저 등록하세요</div>';return}
-  acEl.innerHTML=db.academies.map(a=>{
-    const fi=e=>e.acId===a.id&&ok(e);
-    const ai=db.entries.filter(e=>fi(e)&&e.type==='inc').reduce((s,e)=>s+(Number(e.amount)||0),0);
-    const as=db.entries.filter(e=>fi(e)&&e.type==='sal').reduce((s,e)=>s+(Number(e.amount)||0),0);
-    const ar=db.entries.filter(e=>fi(e)&&e.type==='rent').reduce((s,e)=>s+(Number(e.amount)||0),0);
-    const am=db.entries.filter(e=>fi(e)&&e.type==='mgmt').reduce((s,e)=>s+(Number(e.amount)||0),0);
-    const abk=db.entries.filter(e=>fi(e)&&e.type==='bk').reduce((s,e)=>s+(Number(e.amount)||0),0);
-    const an=ai-as-ar-am-abk;
-    return `<div class="ac-row"><div class="ac-dot"></div><div class="ac-info"><div class="ac-name2">${a.name}</div><div class="ac-nums">수입 ${W(ai)} / 급여 ${W(as)} / 월세 ${W(ar)} / 관리비 ${W(am)} / 기장비 ${W(abk)}</div></div><div class="ac-net" style="color:${an>=0?'var(--green)':'var(--red)'}">${W(an)}</div></div>`;
+  ['dinc','dsal','drent','dmgmt','dbk','dtax'].forEach((id,i)=>{
+    document.getElementById(id).textContent=W([inc,sal,rent,mgmt,bk,tax][i]);
+  });
+  const ne=document.getElementById('dnet');ne.textContent=W(net);ne.style.color=net>=0?'var(--gn)':'var(--rd)';
+  const el=document.getElementById('dacl');
+  if(!db.acs.length){el.innerHTML='<div class="em">학원을 먼저 등록하세요</div>';return}
+  el.innerHTML=db.acs.map(a=>{
+    const fi=r=>r.acId===a.id&&ok(r);
+    const ai=db.rows.filter(r=>fi(r)&&r.type==='inc').reduce((s,r)=>s+(Number(r.amount)||0),0);
+    const as=db.rows.filter(r=>fi(r)&&r.type==='sal').reduce((s,r)=>s+(Number(r.amount)||0),0);
+    const ar=db.rows.filter(r=>fi(r)&&r.type==='rent').reduce((s,r)=>s+(Number(r.amount)||0),0);
+    const am=db.rows.filter(r=>fi(r)&&r.type==='mgmt').reduce((s,r)=>s+(Number(r.amount)||0),0);
+    const ab=db.rows.filter(r=>fi(r)&&r.type==='bk').reduce((s,r)=>s+(Number(r.amount)||0),0);
+    const an=ai-as-ar-am-ab;
+    return `<div class="ar"><div class="ad"></div><div class="ai"><div class="an">${a.name}</div><div class="anu">수입 ${W(ai)} / 급여 ${W(as)} / 월세 ${W(ar)} / 관리비 ${W(am)} / 기장비 ${W(ab)}</div></div><div class="av" style="color:${an>=0?'var(--gn)':'var(--rd)'}">${W(an)}</div></div>`;
   }).join('');
 }
 
-/* ══════════════════════════════════════
-   내역
-══════════════════════════════════════ */
-function filterHistory(t){histFilter=t;renderHistory()}
-function renderHistory(){
+/* ═══════════ 내역 ═══════════ */
+function hf2(t){hflt=t;rHist()}
+function rHist(){
   const f=document.getElementById('hf').value,t=document.getElementById('ht').value;
-  let rows=db.entries
-    .filter(e=>(!f||e.month>=f)&&(!t||e.month<=t)&&(!histFilter||e.type===histFilter))
-    .sort((a,b)=>b.ts-a.ts);
-  const el=document.getElementById('history-list');
-  if(!rows.length){el.innerHTML='<div class="empty">내역이 없습니다</div>';return}
-  const labels={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금'};
-  const grouped={};
-  rows.forEach(e=>{
-  // month 필드 정규화: ISO datetime이면 KST 변환, 아니면 앞 7자리만
-  let m=e.month||'';
-  if(m.length>7&&m.includes('T')){
-    // ISO datetime → KST 변환
-    const dt=new Date(m);
-    const kst=new Date(dt.getTime()+9*60*60*1000);
-    m=kst.toISOString().slice(0,7);
-    e.month=m; // 정규화된 값으로 업데이트
-  }else{
-    m=m.slice(0,7);
-    e.month=m;
-  }
-  (grouped[m]=grouped[m]||[]).push(e);
-});
-  el.innerHTML=Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).map(month=>{
-    const items=grouped[month].map(e=>`<div class="li">
-      <div class="li-l">
-        <span class="tag tag-${e.type}">${labels[e.type]||e.type}${e.kind?' · '+e.kind:''}</span>
-        <div class="li-name">${e.acName?e.acName+' · ':''}${e.name||''}</div>
-        <div class="li-sub">${e.month||''}${e.type==='sal'?'  실지급 '+W(e.net):''}</div>
-      </div>
-      <div class="li-r">
-        <div class="li-amt ${e.type==='inc'?'p':'m'}">${e.type==='inc'?'':'-'}${W(e.amount)}</div>
-        <button class="edit-btn" onclick="openEditModal('${e.id}')" aria-label="수정">✎</button>
-        <button class="del-btn" onclick="delEntry('${e.id}')" aria-label="삭제">×</button>
-      </div>
-    </div>`).join('');
-    return `<div style="font-size:12px;font-weight:600;color:var(--text2);margin:10px 0 4px">${month}</div><div class="card" style="padding:0 14px">${items}</div>`;
+  const rows=db.rows.filter(r=>(!f||r.month>=f)&&(!t||r.month<=t)&&(!hflt||r.type===hflt)).sort((a,b)=>b.ts-a.ts);
+  const el=document.getElementById('hlist');
+  if(!rows.length){el.innerHTML='<div class="em">내역이 없습니다</div>';return}
+  const lb={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금'};
+  const tc={inc:'ti',sal:'ts',rent:'tr',mgmt:'tm',bk:'tb2',tax:'tx2'};
+  const gp={};rows.forEach(r=>{(gp[r.month]=gp[r.month]||[]).push(r)});
+  el.innerHTML=Object.keys(gp).sort((a,b)=>b.localeCompare(a)).map(m=>{
+    const its=gp[m].map(r=>`<div class="li">
+      <div class="lil"><span class="tg ${tc[r.type]}">${lb[r.type]||r.type}${r.kind?' · '+r.kind:''}</span>
+      <div class="ln">${r.acName?r.acName+' · ':''}${r.name||''}</div>
+      <div class="ls">${r.month||''}${r.type==='sal'?'  실지급 '+W(r.net):''}</div></div>
+      <div class="lr"><div class="la ${r.type==='inc'?'p':'m'}">${r.type==='inc'?'':'-'}${W(r.amount)}</div>
+      <button class="eb" onclick="openEM('${r.id}')">✎</button>
+      <button class="db" onclick="delR('${r.id}')">×</button></div></div>`).join('');
+    return `<div style="font-size:12px;font-weight:600;color:var(--t2);margin:10px 0 4px">${m}</div><div class="card" style="padding:0 14px">${its}</div>`;
   }).join('');
 }
-function delEntry(id){
-  if(!confirm('삭제할까요?'))return;
-  db.entries=db.entries.filter(e=>e.id!==id);
-  saveAndPush();renderHistory();calcDash();toast('삭제되었습니다');
-}
+function delR(id){if(!confirm('삭제할까요?'))return;db.rows=db.rows.filter(r=>r.id!==id);save();push();rHist();dash();toast('삭제되었습니다')}
 
-/* ══════════════════════════════════════
-   학원별
-══════════════════════════════════════ */
-function setByacAc(id){byacAcId=id;renderByAc()}
-function toggleAcDetail(id){const el=document.getElementById(id);if(el)el.classList.toggle('open')}
-function renderByAc(){
+/* ═══════════ 학원별 ═══════════ */
+function sBAc(id){bacid=id;rByac()}
+function tAD(id){const e=document.getElementById(id);if(e)e.classList.toggle('open')}
+function rByac(){
   const f=document.getElementById('bf').value,t=document.getElementById('bt').value;
-  const ok=e=>{
-  let m=e.month||'';
-  if(m.length>7&&m.includes('T')){
-    const dt=new Date(m);
-    const kst=new Date(dt.getTime()+9*60*60*1000);
-    m=kst.toISOString().slice(0,7);
-    e.month=m;
-  }else{m=m.slice(0,7);if(m)e.month=m;}
-  return(!f||m>=f)&&(!t||m<=t);
-};
-  const acs=db.academies;
-  document.getElementById('byac-tabs').innerHTML=
-    `<button class="ac-tab ${byacAcId==='all'?'on':''}" onclick="setByacAc('all')">전체</button>`+
-    acs.map(a=>`<button class="ac-tab ${byacAcId===a.id?'on':''}" onclick="setByacAc('${a.id}')">${a.name}</button>`).join('');
-  const el=document.getElementById('byac-content');
-  if(!acs.length){el.innerHTML='<div class="empty">학원을 먼저 등록하세요</div>';return}
-  const labels={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금'};
-  const expTypes=['sal','rent','mgmt','bk'];
-
-  if(byacAcId==='all'){
-    const rows=db.entries.filter(ok);
-    const totInc=rows.filter(e=>e.type==='inc').reduce((s,e)=>s+(Number(e.amount)||0),0);
-    const totExp=['sal','rent','mgmt','bk','tax'].reduce((s,tp)=>s+rows.filter(e=>e.type===tp).reduce((ss,e)=>ss+(Number(e.amount)||0),0),0);
-    const net=totInc-totExp;
-    const cards=acs.map(a=>{
-      const ar=rows.filter(e=>e.acId===a.id);
-      const ai=ar.filter(e=>e.type==='inc').reduce((s,e)=>s+(Number(e.amount)||0),0);
-      const aExp=expTypes.reduce((s,tp)=>s+ar.filter(e=>e.type===tp).reduce((ss,e)=>ss+(Number(e.amount)||0),0),0);
-      const an=ai-aExp;
-      const detail=expTypes.map(tp=>{
-        const v=ar.filter(e=>e.type===tp).reduce((s,e)=>s+(Number(e.amount)||0),0);
-        return v?`<div class="sub-row"><span>${labels[tp]}</span><span>−${W(v)}</span></div>`:'';
-      }).join('');
-      return `<div class="ac-detail-card">
-        <div class="ac-detail-hd" onclick="toggleAcDetail('body-${a.id}')">
-          <span class="ac-detail-name">${a.name}</span>
-          <span class="ac-detail-net" style="color:${an>=0?'var(--green)':'var(--red)'}">${W(an)}</span>
-        </div>
-        <div class="ac-detail-body" id="body-${a.id}">
-          <div class="sub-row"><span style="color:var(--green)">수입</span><span style="color:var(--green);font-weight:600">${W(ai)}</span></div>
-          ${detail}
-          <div class="sub-row total" style="border-top:1px solid var(--border)"><span>순이익</span><span style="color:${an>=0?'var(--green)':'var(--red)'}">${W(an)}</span></div>
-        </div>
-      </div>`;
+  const ok=r=>{const m=r.month||'';return(!f||m>=f)&&(!t||m<=t)};
+  document.getElementById('atabs').innerHTML=
+    `<button class="at ${bacid==='all'?'on':''}" onclick="sBAc('all')">전체</button>`+
+    db.acs.map(a=>`<button class="at ${bacid===a.id?'on':''}" onclick="sBAc('${a.id}')">${a.name}</button>`).join('');
+  const el=document.getElementById('acont');
+  if(!db.acs.length){el.innerHTML='<div class="em">학원을 먼저 등록하세요</div>';return}
+  const lb={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금'};
+  const etypes=['sal','rent','mgmt','bk'];
+  if(bacid==='all'){
+    const rs=db.rows.filter(ok);
+    const ti=rs.filter(r=>r.type==='inc').reduce((s,r)=>s+(Number(r.amount)||0),0);
+    const te=['sal','rent','mgmt','bk','tax'].reduce((s,tp)=>s+rs.filter(r=>r.type===tp).reduce((ss,r)=>ss+(Number(r.amount)||0),0),0);
+    const cards=db.acs.map(a=>{
+      const ar=rs.filter(r=>r.acId===a.id);
+      const ai=ar.filter(r=>r.type==='inc').reduce((s,r)=>s+(Number(r.amount)||0),0);
+      const ae=etypes.reduce((s,tp)=>s+ar.filter(r=>r.type===tp).reduce((ss,r)=>ss+(Number(r.amount)||0),0),0);
+      const an=ai-ae;
+      const dt=etypes.map(tp=>{const v=ar.filter(r=>r.type===tp).reduce((s,r)=>s+(Number(r.amount)||0),0);return v?`<div class="sr"><span>${lb[tp]}</span><span>−${W(v)}</span></div>`:''}).join('');
+      return `<div class="adc"><div class="adh" onclick="tAD('bd-${a.id}')"><span class="adn">${a.name}</span><span class="adv" style="color:${an>=0?'var(--gn)':'var(--rd)'}">${W(an)}</span></div>
+        <div class="adb" id="bd-${a.id}">
+          <div class="sr"><span style="color:var(--gn)">수입</span><span style="color:var(--gn);font-weight:600">${W(ai)}</span></div>
+          ${dt}<div class="sr tot" style="border-top:1px solid var(--bd)"><span>순이익</span><span style="color:${an>=0?'var(--gn)':'var(--rd)'}">${W(an)}</span></div>
+        </div></div>`;
     }).join('');
-    el.innerHTML=`<div class="net-box" style="margin-bottom:10px"><div class="net-lbl">전체 순이익</div><div class="net-val" style="color:${net>=0?'var(--green)':'var(--red)'}">${W(net)}</div></div>
-      <div class="sg" style="margin-bottom:10px"><div class="sbox"><div class="lbl">총 수입</div><div class="val g">${W(totInc)}</div></div><div class="sbox"><div class="lbl">총 지출</div><div class="val r">${W(totExp)}</div></div></div>${cards}`;
+    el.innerHTML=`<div class="nb" style="margin-bottom:10px"><div class="nl">전체 순이익</div><div class="nv" style="color:${(ti-te)>=0?'var(--gn)':'var(--rd)'}">${W(ti-te)}</div></div>
+      <div class="sg" style="margin-bottom:10px"><div class="sb"><div class="lb">총 수입</div><div class="vl g">${W(ti)}</div></div><div class="sb"><div class="lb">총 지출</div><div class="vl r">${W(te)}</div></div></div>${cards}`;
     return;
   }
-
-  const ac=acs.find(a=>a.id===byacAcId);
-  if(!ac){el.innerHTML='';return}
-  const aRows=db.entries.filter(e=>e.acId===ac.id&&ok(e));
-  const taxRows=db.entries.filter(e=>e.type==='tax'&&ok(e));
-  const totInc=aRows.filter(e=>e.type==='inc').reduce((s,e)=>s+(Number(e.amount)||0),0);
-  const totExp=expTypes.reduce((s,tp)=>s+aRows.filter(e=>e.type===tp).reduce((ss,e)=>ss+(Number(e.amount)||0),0),0);
-  const net=totInc-totExp;
-  const incHtml=aRows.filter(e=>e.type==='inc').sort((a,b)=>b.month.localeCompare(a.month))
-    .map(e=>`<div class="li"><div class="li-l"><div class="li-name">${e.name}</div><div class="li-sub">${e.month}</div></div>
-      <div class="li-r"><div class="li-amt p">${W(e.amount)}</div>
-      <button class="edit-btn" onclick="openEditModal('${e.id}')">✎</button>
-      <button class="del-btn" onclick="delEntryAndRefresh('${e.id}')">×</button></div></div>`).join('')||'<div class="empty">내역 없음</div>';
-  let expHtml='';
-  expTypes.forEach(tp=>{
-    const rows=aRows.filter(e=>e.type===tp).sort((a,b)=>b.month.localeCompare(a.month));
-    if(!rows.length)return;
-    const sub=rows.reduce((s,e)=>s+(Number(e.amount)||0),0);
-    expHtml+=`<div style="font-size:12px;font-weight:600;color:var(--text2);margin:8px 0 4px">${labels[tp]} 합계 ${W(sub)}</div>`;
-    expHtml+=rows.map(e=>`<div class="li"><div class="li-l"><div class="li-name">${e.name}</div><div class="li-sub">${e.month}${tp==='sal'?'  실지급 '+W(e.net):''}</div></div>
-      <div class="li-r"><div class="li-amt m">−${W(e.amount)}</div>
-      <button class="edit-btn" onclick="openEditModal('${e.id}')">✎</button>
-      <button class="del-btn" onclick="delEntryAndRefresh('${e.id}')">×</button></div></div>`).join('');
+  const ac=db.acs.find(a=>a.id===bacid);if(!ac){el.innerHTML='';return}
+  const ar=db.rows.filter(r=>r.acId===ac.id&&ok(r));
+  const tx=db.rows.filter(r=>r.type==='tax'&&ok(r));
+  const ti=ar.filter(r=>r.type==='inc').reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const te=etypes.reduce((s,tp)=>s+ar.filter(r=>r.type===tp).reduce((ss,r)=>ss+(Number(r.amount)||0),0),0);
+  const ih=ar.filter(r=>r.type==='inc').sort((a,b)=>b.month.localeCompare(a.month))
+    .map(r=>`<div class="li"><div class="lil"><div class="ln">${r.name}</div><div class="ls">${r.month}</div></div>
+      <div class="lr"><div class="la p">${W(r.amount)}</div><button class="eb" onclick="openEM('${r.id}')">✎</button><button class="db" onclick="delR2('${r.id}')">×</button></div></div>`).join('')||'<div class="em">없음</div>';
+  let eh='';
+  etypes.forEach(tp=>{
+    const rs2=ar.filter(r=>r.type===tp).sort((a,b)=>b.month.localeCompare(a.month));
+    if(!rs2.length)return;
+    eh+=`<div style="font-size:12px;font-weight:600;color:var(--t2);margin:8px 0 4px">${lb[tp]} 합계 ${W(rs2.reduce((s,r)=>s+(Number(r.amount)||0),0))}</div>`;
+    eh+=rs2.map(r=>`<div class="li"><div class="lil"><div class="ln">${r.name}</div><div class="ls">${r.month}${tp==='sal'?' 실지급 '+W(r.net):''}</div></div>
+      <div class="lr"><div class="la m">−${W(r.amount)}</div><button class="eb" onclick="openEM('${r.id}')">✎</button><button class="db" onclick="delR2('${r.id}')">×</button></div></div>`).join('');
   });
-  el.innerHTML=`<div class="net-box" style="margin-bottom:10px"><div class="net-lbl">${ac.name} 순이익</div><div class="net-val" style="color:${net>=0?'var(--green)':'var(--red)'}">${W(net)}</div></div>
-    <div class="sg" style="margin-bottom:10px"><div class="sbox"><div class="lbl">수입</div><div class="val g">${W(totInc)}</div></div><div class="sbox"><div class="lbl">지출</div><div class="val r">${W(totExp)}</div></div></div>
-    <div style="font-size:13px;font-weight:700;color:var(--green);margin:10px 0 4px">수입 내역</div><div class="card" style="padding:0 14px">${incHtml}</div>
-    <div style="font-size:13px;font-weight:700;color:var(--red);margin:10px 0 4px">지출 내역</div><div class="card" style="padding:0 14px">${expHtml||'<div class="empty">내역 없음</div>'}</div>
-    ${taxRows.length?`<div style="font-size:13px;font-weight:700;color:var(--blue);margin:10px 0 4px">세금 납부 (전체 귀속)</div><div class="card" style="padding:0 14px">${taxRows.sort((a,b)=>b.month.localeCompare(a.month)).map(e=>`<div class="li"><div class="li-l"><div class="li-name">${e.kind||''} ${e.name||''}</div><div class="li-sub">${e.month||''}</div></div><div class="li-r"><div class="li-amt m">−${W(e.amount)}</div></div></div>`).join('')}</div>`:''}`;
+  el.innerHTML=`<div class="nb" style="margin-bottom:10px"><div class="nl">${ac.name} 순이익</div><div class="nv" style="color:${(ti-te)>=0?'var(--gn)':'var(--rd)'}">${W(ti-te)}</div></div>
+    <div class="sg" style="margin-bottom:10px"><div class="sb"><div class="lb">수입</div><div class="vl g">${W(ti)}</div></div><div class="sb"><div class="lb">지출</div><div class="vl r">${W(te)}</div></div></div>
+    <div style="font-size:13px;font-weight:700;color:var(--gn);margin:10px 0 4px">수입 내역</div><div class="card" style="padding:0 14px">${ih}</div>
+    <div style="font-size:13px;font-weight:700;color:var(--rd);margin:10px 0 4px">지출 내역</div><div class="card" style="padding:0 14px">${eh||'<div class="em">없음</div>'}</div>
+    ${tx.length?`<div style="font-size:13px;font-weight:700;color:var(--bl);margin:10px 0 4px">세금 납부 (전체)</div><div class="card" style="padding:0 14px">${tx.sort((a,b)=>b.month.localeCompare(a.month)).map(r=>`<div class="li"><div class="lil"><div class="ln">${r.kind||''} ${r.name||''}</div><div class="ls">${r.month||''}</div></div><div class="lr"><div class="la m">−${W(r.amount)}</div></div></div>`).join('')}</div>`:''}`;
 }
-function delEntryAndRefresh(id){
-  if(!confirm('삭제할까요?'))return;
-  db.entries=db.entries.filter(e=>e.id!==id);
-  saveAndPush();renderByAc();calcDash();toast('삭제되었습니다');
+function delR2(id){if(!confirm('삭제할까요?'))return;db.rows=db.rows.filter(r=>r.id!==id);save();push();rByac();dash();toast('삭제되었습니다')}
+
+/* ═══════════ 학원 관리 ═══════════ */
+function addAc(){
+  const n=document.getElementById('acni').value.trim();
+  if(!n){toast('이름을 입력하세요');return}
+  if(db.acs.find(a=>a.name===n)){toast('이미 등록된 학원입니다');return}
+  db.acs.push({id:uid(),name:n});
+  save();push();document.getElementById('acni').value='';rChips();rAcSel();toast(n+' 등록 완료');
+}
+function delAc(id){
+  const a=db.acs.find(x=>x.id===id);
+  if(!confirm((a?.name||'')+'을 삭제할까요?\n관련 내역도 삭제됩니다.'))return;
+  db.acs=db.acs.filter(x=>x.id!==id);db.rows=db.rows.filter(r=>r.acId!==id);
+  save();push();rChips();rAcSel();toast('삭제되었습니다');
+}
+function rChips(){
+  const el=document.getElementById('achips');
+  if(!db.acs.length){el.innerHTML='<div class="em">등록된 학원이 없습니다</div>';return}
+  el.innerHTML=db.acs.map(a=>`<span class="cp">${a.name}<button onclick="delAc('${a.id}')">×</button></span>`).join('');
 }
 
-/* ══════════════════════════════════════
-   학원 관리
-══════════════════════════════════════ */
-function addAcademy(){
-  const name=document.getElementById('ac-name-input').value.trim();
-  if(!name){toast('학원 이름을 입력하세요');return}
-  if(db.academies.find(a=>a.name===name)){toast('이미 등록된 학원입니다');return}
-  db.academies.push({id:genId(),name});
-  saveAndPush();document.getElementById('ac-name-input').value='';
-  renderAcChips();refreshAcSelect();toast(name+' 등록 완료');
+/* ═══════════ 수정 모달 ═══════════ */
+function openEM(id){
+  const r=db.rows.find(x=>x.id===id);if(!r)return;
+  eid=id;
+  const lb={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금'};
+  ['inc','sal','rent','mgmt','bk','tax'].forEach(t=>document.getElementById('em-'+t).style.display=t===r.type?'block':'none');
+  document.getElementById('emtitle').textContent=lb[r.type]+' 수정';
+  if(r.type==='inc'){fillSel('em-ac-inc');document.getElementById('em-minc').value=r.month||'';document.getElementById('em-ac-inc').value=r.acId||'';document.getElementById('em-iname').value=r.name||'';document.getElementById('em-iamt').value=r.amount||''}
+  else if(r.type==='sal'){fillSel('em-ac-sal');document.getElementById('em-msal').value=r.month||'';document.getElementById('em-ac-sal').value=r.acId||'';document.getElementById('em-sname').value=r.name||'';document.getElementById('em-samt').value=r.amount||'';document.getElementById('em-srate').value=r.rate||3.3;cEsal()}
+  else if(r.type==='rent'){fillSel('em-ac-rent');document.getElementById('em-mrent').value=r.month||'';document.getElementById('em-ac-rent').value=r.acId||'';document.getElementById('em-rname').value=r.name||'';document.getElementById('em-ramt').value=r.amount||''}
+  else if(r.type==='mgmt'){fillSel('em-ac-mgmt');document.getElementById('em-mmgmt').value=r.month||'';document.getElementById('em-ac-mgmt').value=r.acId||'';document.getElementById('em-mname').value=r.name||'';document.getElementById('em-mamt').value=r.amount||''}
+  else if(r.type==='bk'){fillSel('em-ac-bk');document.getElementById('em-mbk').value=r.month||'';document.getElementById('em-ac-bk').value=r.acId||'';document.getElementById('em-bname').value=r.name||'';document.getElementById('em-bamt').value=r.amount||''}
+  else if(r.type==='tax'){document.getElementById('em-tdate').value=r.date||r.month+'-01';document.getElementById('em-tkind').value=r.kind||'국세';document.getElementById('em-tname').value=r.name||'';document.getElementById('em-tamt').value=r.amount||''}
+  document.getElementById('emod').classList.add('open');
 }
-function deleteAcademy(id){
-  const ac=db.academies.find(a=>a.id===id);
-  if(!confirm((ac?.name||'')+'을 삭제할까요?'))return;
-  db.academies=db.academies.filter(a=>a.id!==id);
-  db.entries=db.entries.filter(e=>e.acId!==id);
-  saveAndPush();renderAcChips();refreshAcSelect();toast('삭제되었습니다');
+function closeEM(){document.getElementById('emod').classList.remove('open');eid=null}
+function cmod(e){if(e.target===document.getElementById('emod'))closeEM()}
+function doEdit(){
+  const i=db.rows.findIndex(x=>x.id===eid);if(i<0)return;
+  const r=db.rows[i];const t=r.type;
+  if(t==='inc'){const acid=document.getElementById('em-ac-inc').value;const m=document.getElementById('em-minc').value;const n=document.getElementById('em-iname').value.trim();const a=parseFloat(document.getElementById('em-iamt').value)||0;if(!m||!n||!a){toast('모두 입력하세요');return}Object.assign(db.rows[i],{acId:acid,acName:db.acs.find(x=>x.id===acid)?.name||'',month:m,name:n,amount:a,ts:Date.now()})}
+  else if(t==='sal'){const acid=document.getElementById('em-ac-sal').value;const m=document.getElementById('em-msal').value;const n=document.getElementById('em-sname').value.trim();const a=parseFloat(document.getElementById('em-samt').value)||0;const rv=parseFloat(document.getElementById('em-srate').value)||3.3;if(!m||!n||!a){toast('모두 입력하세요');return}const tx=Math.round(a*rv/100);Object.assign(db.rows[i],{acId:acid,acName:db.acs.find(x=>x.id===acid)?.name||'',month:m,name:n,amount:a,rate:rv,taxAmt:tx,net:a-tx,ts:Date.now()})}
+  else if(t==='rent'){const acid=document.getElementById('em-ac-rent').value;const m=document.getElementById('em-mrent').value;const n=document.getElementById('em-rname').value.trim();const a=parseFloat(document.getElementById('em-ramt').value)||0;if(!m||!a){toast('모두 입력하세요');return}Object.assign(db.rows[i],{acId:acid,acName:db.acs.find(x=>x.id===acid)?.name||'',month:m,name:n||'월세',amount:a,ts:Date.now()})}
+  else if(t==='mgmt'){const acid=document.getElementById('em-ac-mgmt').value;const m=document.getElementById('em-mmgmt').value;const n=document.getElementById('em-mname').value.trim();const a=parseFloat(document.getElementById('em-mamt').value)||0;if(!m||!a){toast('모두 입력하세요');return}Object.assign(db.rows[i],{acId:acid,acName:db.acs.find(x=>x.id===acid)?.name||'',month:m,name:n||'관리비',amount:a,ts:Date.now()})}
+  else if(t==='bk'){const acid=document.getElementById('em-ac-bk').value;const m=document.getElementById('em-mbk').value;const n=document.getElementById('em-bname').value.trim();const a=parseFloat(document.getElementById('em-bamt').value)||0;if(!m||!a){toast('모두 입력하세요');return}Object.assign(db.rows[i],{acId:acid,acName:db.acs.find(x=>x.id===acid)?.name||'',month:m,name:n||'기장비',amount:a,ts:Date.now()})}
+  else if(t==='tax'){const dt=document.getElementById('em-tdate').value;const kd=document.getElementById('em-tkind').value;const n=document.getElementById('em-tname').value.trim();const a=parseFloat(document.getElementById('em-tamt').value)||0;if(!dt||!n||!a){toast('모두 입력하세요');return}Object.assign(db.rows[i],{month:dt.slice(0,7),date:dt,kind:kd,name:n,amount:a,ts:Date.now()})}
+  save();push();closeEM();rHist();dash();toast('수정되었습니다');
 }
-function renderAcChips(){
-  const el=document.getElementById('ac-chips');
-  if(!db.academies.length){el.innerHTML='<div class="empty">등록된 학원이 없습니다</div>';return}
-  el.innerHTML=db.academies.map(a=>`<span class="chip">${a.name}<button onclick="deleteAcademy('${a.id}')" aria-label="삭제">×</button></span>`).join('');
-}
+function delFromMod(){if(!confirm('삭제할까요?'))return;db.rows=db.rows.filter(r=>r.id!==eid);save();push();closeEM();rHist();dash();toast('삭제되었습니다')}
 
-/* ══════════════════════════════════════
-   수정 모달
-══════════════════════════════════════ */
-function openEditModal(id){
-  const e=db.entries.find(x=>x.id===id);if(!e)return;
-  editId=id;
-  const labels={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금'};
-  ['inc','sal','rent','mgmt','bk','tax'].forEach(t=>document.getElementById('edit-g-'+t).style.display=t===e.type?'block':'none');
-  document.getElementById('edit-modal-title').textContent=labels[e.type]+' 수정';
-  if(e.type==='inc'){fillAcSelect('e-ac-inc');document.getElementById('e-month-inc').value=e.month||'';document.getElementById('e-ac-inc').value=e.acId||'';document.getElementById('e-inc-name').value=e.name||'';document.getElementById('e-inc-amt').value=e.amount||''}
-  else if(e.type==='sal'){fillAcSelect('e-ac-sal');document.getElementById('e-month-sal').value=e.month||'';document.getElementById('e-ac-sal').value=e.acId||'';document.getElementById('e-sal-name').value=e.name||'';document.getElementById('e-sal-amt').value=e.amount||'';document.getElementById('e-sal-rate').value=e.rate||3.3;calcEditSal()}
-  else if(e.type==='rent'){fillAcSelect('e-ac-rent');document.getElementById('e-month-rent').value=e.month||'';document.getElementById('e-ac-rent').value=e.acId||'';document.getElementById('e-rent-name').value=e.name||'';document.getElementById('e-rent-amt').value=e.amount||''}
-  else if(e.type==='mgmt'){fillAcSelect('e-ac-mgmt');document.getElementById('e-month-mgmt').value=e.month||'';document.getElementById('e-ac-mgmt').value=e.acId||'';document.getElementById('e-mgmt-name').value=e.name||'';document.getElementById('e-mgmt-amt').value=e.amount||''}
-  else if(e.type==='bk'){fillAcSelect('e-ac-bk');document.getElementById('e-month-bk').value=e.month||'';document.getElementById('e-ac-bk').value=e.acId||'';document.getElementById('e-bk-name').value=e.name||'';document.getElementById('e-bk-amt').value=e.amount||''}
-  else if(e.type==='tax'){document.getElementById('e-tax-date').value=e.date||e.month+'-01';document.getElementById('e-tax-kind').value=e.kind||'국세';document.getElementById('e-tax-name').value=e.name||'';document.getElementById('e-tax-amt').value=e.amount||''}
-  document.getElementById('edit-modal').classList.add('open');
+/* ═══════════ 다운로드 ═══════════ */
+function dlCSV(){
+  const f=document.getElementById('dlf').value,t=document.getElementById('dlt').value;
+  const rows=db.rows.filter(r=>(!f||r.month>=f)&&(!t||r.month<=t)).sort((a,b)=>(a.month||'').localeCompare(b.month||''));
+  if(!rows.length){toast('해당 기간 내역 없음');return}
+  const lb={inc:'수입',sal:'강사급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금납부'};
+  const lines=[['연월','학원','구분','항목','금액','공제세액','실지급','세목','납부일'].join(',')];
+  rows.forEach(r=>lines.push([r.month,r.acName||'',lb[r.type]||r.type,r.name||'',r.amount||0,r.taxAmt||'',r.net||'',r.kind||'',r.date||''].map(v=>`"${v}"`).join(',')));
+  const sm={inc:0,sal:0,rent:0,mgmt:0,bk:0,tax:0};
+  rows.forEach(r=>{if(sm[r.type]!==undefined)sm[r.type]+=(Number(r.amount)||0)});
+  lines.push('');lines.push(`"합계","총수입:${sm.inc}","총급여:${sm.sal}","총월세:${sm.rent}","총관리비:${sm.mgmt}","총기장비:${sm.bk}","총세금:${sm.tax}","순이익:${sm.inc-sm.sal-sm.rent-sm.mgmt-sm.bk-sm.tax}"`);
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8'}));a.download=`학원재정_${f||'전체'}_${t||''}.csv`;a.click();toast('CSV 다운로드 완료');
 }
-function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');editId=null}
-function closeModal(e){if(e.target===document.getElementById('edit-modal'))closeEditModal()}
-function saveEdit(){
-  const idx=db.entries.findIndex(x=>x.id===editId);if(idx<0)return;
-  const e=db.entries[idx];const type=e.type;
-  if(type==='inc'){const acId=document.getElementById('e-ac-inc').value;const month=document.getElementById('e-month-inc').value;const name=document.getElementById('e-inc-name').value.trim();const amt=parseFloat(document.getElementById('e-inc-amt').value)||0;if(!month||!name||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name,amount:amt,ts:Date.now()})}
-  else if(type==='sal'){const acId=document.getElementById('e-ac-sal').value;const month=document.getElementById('e-month-sal').value;const name=document.getElementById('e-sal-name').value.trim();const amt=parseFloat(document.getElementById('e-sal-amt').value)||0;const rate=parseFloat(document.getElementById('e-sal-rate').value)||3.3;if(!month||!name||!amt){toast('모두 입력하세요');return}const taxAmt=Math.round(amt*rate/100);Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name,amount:amt,rate,taxAmt,net:amt-taxAmt,ts:Date.now()})}
-  else if(type==='rent'){const acId=document.getElementById('e-ac-rent').value;const month=document.getElementById('e-month-rent').value;const name=document.getElementById('e-rent-name').value.trim();const amt=parseFloat(document.getElementById('e-rent-amt').value)||0;if(!month||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name:name||'월세',amount:amt,ts:Date.now()})}
-  else if(type==='mgmt'){const acId=document.getElementById('e-ac-mgmt').value;const month=document.getElementById('e-month-mgmt').value;const name=document.getElementById('e-mgmt-name').value.trim();const amt=parseFloat(document.getElementById('e-mgmt-amt').value)||0;if(!month||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name:name||'관리비',amount:amt,ts:Date.now()})}
-  else if(type==='bk'){const acId=document.getElementById('e-ac-bk').value;const month=document.getElementById('e-month-bk').value;const name=document.getElementById('e-bk-name').value.trim();const amt=parseFloat(document.getElementById('e-bk-amt').value)||0;if(!month||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{acId,acName:db.academies.find(a=>a.id===acId)?.name||'',month,name:name||'기장비',amount:amt,ts:Date.now()})}
-  else if(type==='tax'){const date=document.getElementById('e-tax-date').value;const kind=document.getElementById('e-tax-kind').value;const name=document.getElementById('e-tax-name').value.trim();const amt=parseFloat(document.getElementById('e-tax-amt').value)||0;if(!date||!name||!amt){toast('모두 입력하세요');return}Object.assign(db.entries[idx],{month:date.slice(0,7),date,kind,name,amount:amt,ts:Date.now()})}
-  saveAndPush();closeEditModal();renderHistory();calcDash();toast('수정되었습니다');
+function dlJSON(){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({v:7,at:new Date().toISOString(),db})],{type:'application/json'}));a.download=`학원재정_백업_${kstD()}.json`;a.click();toast('백업 완료');
 }
-function deleteFromModal(){
-  if(!confirm('삭제할까요?'))return;
-  db.entries=db.entries.filter(e=>e.id!==editId);
-  saveAndPush();closeEditModal();renderHistory();calcDash();toast('삭제되었습니다');
-}
-
-/* ══════════════════════════════════════
-   다운로드
-══════════════════════════════════════ */
-function downloadCSV(){
-  const f=document.getElementById('dl-f').value,t=document.getElementById('dl-t').value;
-  const rows=db.entries.filter(e=>(!f||e.month>=f)&&(!t||e.month<=t)).sort((a,b)=>(a.month||'').localeCompare(b.month||''));
-  if(!rows.length){toast('해당 기간에 내역이 없습니다');return}
-  const labels={inc:'수입',sal:'강사급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금납부'};
-  const hdrs=['연월','학원','구분','항목','금액','공제세액','실지급액','세목','납부일'];
-  const lines=[hdrs.join(',')];
-  rows.forEach(e=>lines.push([e.month,e.acName||'',labels[e.type]||e.type,e.name||'',e.amount||0,e.taxAmt||'',e.net||'',e.kind||'',e.date||''].map(v=>`"${v}"`).join(',')));
-  const sums={inc:0,sal:0,rent:0,mgmt:0,bk:0,tax:0};
-  rows.forEach(e=>{if(sums[e.type]!==undefined)sums[e.type]+=(Number(e.amount)||0)});
-  lines.push('');
-  lines.push(`"합계","","","","총수입:${sums.inc}","총급여:${sums.sal}","총월세:${sums.rent}","총관리비:${sums.mgmt}","총기장비:${sums.bk}","총세금:${sums.tax}","순이익:${sums.inc-sums.sal-sums.rent-sums.mgmt-sums.bk-sums.tax}"`);
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8'}));
-  a.download=`학원재정_${f||'전체'}_${t||''}.csv`;a.click();toast('CSV 다운로드 완료');
-}
-function downloadJSON(){
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify({v:6,exportedAt:new Date().toISOString(),db})],{type:'application/json'}));
-  a.download=`학원재정_백업_${today()}.json`;a.click();toast('백업 완료');
-}
-function restoreJSON(input){
-  const file=input.files[0];if(!file)return;
+function doRestore(inp){
+  const f=inp.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=e=>{
     try{
       const d=JSON.parse(e.target.result);
-      const restored=d.db||d;
-      if(!restored.entries||!restored.academies){toast('올바른 백업 파일이 아닙니다');return}
+      const rs=d.db||d;
+      const acs=rs.acs||rs.academies||[];
+      const rows=rs.rows||rs.entries||[];
+      if(!Array.isArray(acs)||!Array.isArray(rows)){toast('올바른 백업 파일이 아닙니다');return}
       if(!confirm('현재 데이터를 덮어씁니다. 계속할까요?'))return;
-      db=restored;
-      saveAndPush();renderAll();toast('복원 완료');
+      db={acs,rows,url:db.url};normAll();save();push();rAll();toast('복원 완료');
     }catch{toast('파일을 읽을 수 없습니다')}
-    input.value='';
+    inp.value='';
   };
-  r.readAsText(file);
+  r.readAsText(f);
 }
 
-/* ══════════════════════════════════════
-   구글 시트 동기화 — 완전 재설계
-   핵심 원칙: 구글 시트 = 단일 진실 원천
-   • 입력/수정/삭제 → 즉시 구글 시트에 push
-   • 동기화 버튼 → 구글 시트에서 pull (로컬 덮어쓰기)
-   • 병합(merge) 하지 않음 → 이중저장 원천 차단
-══════════════════════════════════════ */
-function saveGsUrl(){
-  const url=document.getElementById('gs-url').value.trim();
-  db.gsUrl=url;save();setConn(!!url);
-  toast(url?'연동 저장 완료':'연동 해제됨',2000);
+/* ═══════════ 구글 시트 동기화 ═══════════
+   원칙: 구글 시트 = 단일 기준
+   push: 로컬 → 구글 시트 (덮어쓰기)
+   pull: 구글 시트 → 로컬 (덮어쓰기, 병합 없음)
+══════════════════════════════════════════ */
+function saveUrl(){
+  const u=document.getElementById('gsurl').value.trim();
+  db.url=u;save();setC(!!u);
+  toast(u?'연동 저장 완료':'연동 해제됨',2000);
 }
-
-async function apiGet(url){
-  const res=await fetch(url+'?action=getAll&t='+Date.now(),{cache:'no-store'});
-  if(!res.ok)throw new Error('HTTP '+res.status);
-  return res.json();
-}
-async function apiPost(url, body){
-  const res=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});
-  if(!res.ok)throw new Error('HTTP '+res.status);
-  return res.json();
-}
-
-// 로컬 데이터를 구글 시트에 push (입력/수정/삭제 후 자동 호출)
-async function pushToSheet(){
-  if(!db.gsUrl)return;
+async function push(){
+  if(!db.url)return;
   try{
-    await apiPost(db.gsUrl,{action:'syncAll',db:{academies:db.academies,entries:db.entries}});
-    setConn(true);
+    const res=await fetch(db.url,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'syncAll',db:{academies:db.acs,entries:db.rows}})});
+    const d=await res.json();
+    if(d.status==='ok')setC(true);
   }catch(e){console.warn('push fail',e)}
 }
-
-// 구글 시트에서 pull → 로컬 완전 교체 (병합 없음)
-async function pullFromSheet(){
-  if(!db.gsUrl)return null;
+async function pull(){
+  if(!db.url)return null;
   try{
-    const data=await apiGet(db.gsUrl);
-    if(data.status==='ok')return data;
-    return null;
+    const res=await fetch(db.url+'?action=getAll&t='+Date.now(),{cache:'no-store'});
+    if(!res.ok)return null;
+    const d=await res.json();
+    return d.status==='ok'?d:null;
   }catch(e){return null}
 }
-
-// 헤더 동기화 버튼: 구글 시트 → 로컬 덮어쓰기
+function applyRemote(d){
+  if(!d)return false;
+  // 구글 시트 데이터 그대로 교체 + month KST 정규화
+  const rows=(d.entries||[]).map(r=>({...r,month:normM(r.month)}));
+  const acs=d.academies||[];
+  // 학원 이름 기준 중복 제거 (다른 기기에서 같은 이름으로 만든 경우)
+  const acMap=new Map();
+  acs.forEach(a=>{if(a.name&&!acMap.has(a.name))acMap.set(a.name,a)});
+  db.rows=rows;
+  db.acs=Array.from(acMap.values());
+  save();
+  return true;
+}
 async function syncNow(){
-  if(!db.gsUrl){toast('설정 탭에서 구글 시트 URL을 먼저 입력하세요',3000);return}
-  if(isSyncing){toast('동기화 중입니다...');return}
-  isSyncing=true;
-  setSyncLabel('동기화 중...');
+  if(!db.url){toast('설정 탭에서 구글 시트 URL을 먼저 입력하세요',3000);return}
+  if(syncing){toast('동기화 중입니다...');return}
+  syncing=true;setSL('동기화 중...');
   try{
-    const remote=await pullFromSheet();
-    if(!remote){
-      toast('서버 응답 없음',3000);setConn(false);
-    }else{
-      // 구글 시트 데이터로 로컬 완전 교체 + month KST 정규화
-      const se=remote.entries||[];
-      se.forEach(e=>{
-        let m=e.month||'';
-        if(m.length>7&&m.includes('T')){
-          const dt=new Date(m);
-          const kst=new Date(dt.getTime()+9*60*60*1000);
-          e.month=kst.toISOString().slice(0,7);
-        }else if(m.length>7){e.month=m.slice(0,7);}
-      });
-      db.entries=se;
-      db.academies=remote.academies||[];
-      save();renderAll();
-      toast('동기화 완료 — 총 '+db.entries.length+'건');
-      setConn(true);
-    }
-  }catch(e){toast('오류: '+e.message,3000);setConn(false)}
-  isSyncing=false;
-  setSyncLabel('동기화');
+    const d=await pull();
+    if(!d){toast('서버 응답 없음',3000);setC(false)}
+    else{applyRemote(d);rAll();toast('동기화 완료 — 총 '+db.rows.length+'건');setC(true)}
+  }catch(e){toast('오류: '+e.message,3000);setC(false)}
+  syncing=false;setSL('동기화');
 }
-
-// 설정 탭: 이 기기 데이터로 구글 시트 강제 덮어쓰기
-async function forceOverwrite(){
-  if(!db.gsUrl){toast('URL을 먼저 입력하세요',3000);return}
-  if(!confirm('구글 시트의 모든 데이터를 이 기기 데이터로 완전히 덮어씁니다.\n다른 기기의 데이터는 사라집니다.\n\n계속할까요?'))return;
-  showProg('overwrite-progress','⏳ 구글 시트에 업로드 중...');
+async function forceOW(){
+  if(!db.url){toast('URL을 먼저 입력하세요',3000);return}
+  if(!confirm('구글 시트를 이 기기 데이터로 완전히 덮어씁니다.\n다른 기기의 데이터는 사라집니다. 계속할까요?'))return;
+  pg('owpg','⏳ 구글 시트에 업로드 중...');
   try{
-    await apiPost(db.gsUrl,{action:'syncAll',db:{academies:db.academies,entries:db.entries}});
-    hideProg('overwrite-progress','✅ 완료! 총 '+db.entries.length+'건 업로드됨',5000);
-    setConn(true);toast('구글 시트 초기화 완료');
-  }catch(e){
-    hideProg('overwrite-progress','❌ 실패: '+e.message,5000);
-  }
+    await push();
+    hpg('owpg','✅ 완료! '+db.rows.length+'건 업로드됨',5000);
+    setC(true);toast('초기화 완료');
+  }catch(e){hpg('owpg','❌ 실패: '+e.message,5000)}
 }
 
-/* ══════════════════════════════════════
-   전체 렌더
-══════════════════════════════════════ */
-function renderAll(){
-  calcDash();
-  if(document.getElementById('s-history').classList.contains('on'))renderHistory();
-  if(document.getElementById('s-byac').classList.contains('on'))renderByAc();
-  renderAcChips();refreshAcSelect();
+/* ═══════════ 전체 렌더 ═══════════ */
+function rAll(){
+  dash();
+  if(document.getElementById('s-history').classList.contains('on'))rHist();
+  if(document.getElementById('s-byac').classList.contains('on'))rByac();
+  rChips();rAcSel();
 }
 
-/* ══════════════════════════════════════
-   초기화
-══════════════════════════════════════ */
+/* ═══════════ 초기화 ═══════════ */
 function init(){
   load();
-  const m=now();
-  ['pf','pt','hf','ht','bf','bt','i-month-inc','i-month-sal','i-month-rent','i-month-mgmt','i-month-bk'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value=m;
-  });
-  document.getElementById('i-tax-date').value=today();
-  document.getElementById('dl-f').value=m;
-  document.getElementById('dl-t').value=m;
-  if(!db.academies.length){
-    db.academies=[{id:genId(),name:'장기동(생각키움)'},{id:genId(),name:'사우동(생각키움)'}];
-    save();
-  }
-  refreshAcSelect();renderAcChips();calcDash();setConn(!!db.gsUrl);
-  // 앱 시작 시 구글 시트에서 자동 pull (로컬 덮어쓰기)
-  if(db.gsUrl){
-    setSyncLabel('불러오는 중...');
-    pullFromSheet().then(remote=>{
-      if(remote){
-        db.entries=remote.entries||[];
-        db.academies=remote.academies||[];
-        save();renderAll();setConn(true);
-        toast('최신 데이터 불러옴',1500);
-      }
-      setSyncLabel('동기화');
-    }).catch(()=>setSyncLabel('동기화'));
+  const m=kstYM(),d=kstD();
+  ['pf','pt','hf','ht','bf','bt','iminc','imsal','imrent','immgmt','imbk'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=m});
+  document.getElementById('itdate').value=d;
+  document.getElementById('dlf').value=m;document.getElementById('dlt').value=m;
+  // 기본 학원 없으면 추가 안 함 (사용자가 직접 등록)
+  rAcSel();rChips();dash();setC(!!db.url);
+  // 앱 시작 시 자동 pull
+  if(db.url){
+    setSL('불러오는 중...');
+    pull().then(d=>{
+      if(d){applyRemote(d);rAll();setC(true);toast('최신 데이터 불러옴',1500)}
+      setSL('동기화');
+    }).catch(()=>setSL('동기화'));
   }
 }
 init();
