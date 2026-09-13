@@ -650,9 +650,6 @@ function doSave(){
     Object.assign(row,{month:m,date:dt,acId:acid,acName:db.acs.find(x=>x.id===acid)?.name||'',name:n||cat,category:cat,memo,amount:a});
     document.getElementById('ietccat').value='';document.getElementById('ietcname').value='';
     document.getElementById('ietcamt').value='';document.getElementById('ietcmemo').value='';
-  }
-
-  db.rows.push(row);
   }else if(t==='goo'){
     const acid=document.getElementById('iac').value;
     const m=document.getElementById('imgoo').value;
@@ -667,6 +664,7 @@ function doSave(){
     document.getElementById('igoosel').value='수강료';
     document.getElementById('igooamt-preview').style.display='none';
   }
+  db.rows.push(row);
   save();push();
   toast('저장되었습니다');
 }
