@@ -144,6 +144,7 @@ input:focus,select:focus{outline:none;border-color:var(--bl);box-shadow:0 0 0 3p
     <div class="sb"><div class="lb">기장비</div><div class="vl r" id="dbk">₩0</div></div>
     <div class="sb"><div class="lb">세금 납부</div><div class="vl r" id="dtax">₩0</div></div>
     <div class="sb"><div class="lb">기타지출</div><div class="vl r" id="detc">₩0</div></div>
+    <div class="sb"><div class="lb">구래점 수입</div><div class="vl g" id="dgoo">₩0</div></div>
   </div>
   <div class="st">학원별 현황</div>
   <div class="card" id="dacl"><div class="em">학원을 먼저 등록하세요</div></div>
@@ -160,47 +161,99 @@ input:focus,select:focus{outline:none;border-color:var(--bl);box-shadow:0 0 0 3p
       <button class="tt" onclick="stype('bk',this)">기장비</button>
       <button class="tt" onclick="stype('tax',this)">세금</button>
       <button class="tt" onclick="stype('etc',this)">기타지출</button>
+      <button class="tt" onclick="stype('goo',this)">구래점</button>
     </div>
     <div id="fac" class="fd"><label>학원</label><select id="iac"></select></div>
     <div id="ginc">
       <div class="fd"><label>연월</label><input type="month" id="iminc"></div>
-      <div class="fd"><label>항목 (예: 수강료, 교재비)</label><input type="text" id="iname" placeholder="입력" lang="ko"></div>
-      <div class="fd"><label>금액</label><input type="number" id="iamt" placeholder="0" inputmode="numeric"></div>
+      <div class="fd"><label>항목</label>
+        <select id="icat" onchange="onCatChange()">
+          <option value="수강료">수강료</option>
+          <option value="교재비">교재비</option>
+          <option value="기타">기타 (직접입력)</option>
+        </select>
+      </div>
+      <div class="fd" id="iname-wrap" style="display:none"><label>항목명 직접입력</label><input type="text" id="iname" placeholder="항목명 입력" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="text" id="iamt" placeholder="0" inputmode="numeric" oninput="fmtAmt(this)"></div>
     </div>
     <div id="gsal" style="display:none">
       <div class="fd"><label>연월</label><input type="month" id="imsal"></div>
       <div class="fd"><label>강사 이름</label><input type="text" id="isname" placeholder="이름" lang="ko"></div>
-      <div class="fd"><label>지급액</label><input type="number" id="isamt" placeholder="0" inputmode="numeric" oninput="csal()"></div>
+      <div class="fd"><label>지급액</label><input type="text" id="isamt" placeholder="0" inputmode="numeric" oninput="fmtAmt(this);csal()"></div>
       <div class="fd"><label>원천징수율 (기본 3.3%)</label><input type="number" id="israte" value="3.3" step="0.1" oninput="csal()"></div>
       <div id="spv" class="pv"></div>
     </div>
     <div id="grent" style="display:none">
-      <div class="fd"><label>연월</label><input type="month" id="imrent"></div>
-      <div class="fd"><label>항목명</label><input type="text" id="irname" placeholder="예: 1월 월세" lang="ko"></div>
-      <div class="fd"><label>금액</label><input type="number" id="iramt" placeholder="0" inputmode="numeric"></div>
+      <div class="fd"><label>년도</label><input type="number" id="iryear" placeholder="예: 2026" inputmode="numeric" style="width:100%"></div>
+      <div class="fd"><label>월 선택</label>
+        <select id="irmonth">
+          <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option>
+          <option value="04">4월</option><option value="05">5월</option><option value="06">6월</option>
+          <option value="07">7월</option><option value="08">8월</option><option value="09">9월</option>
+          <option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+        </select>
+      </div>
+      <div class="fd"><label>항목명 (선택)</label><input type="text" id="irname" placeholder="예: 월세" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="text" id="iramt" placeholder="0" inputmode="numeric" oninput="fmtAmt(this)"></div>
     </div>
     <div id="gmgmt" style="display:none">
-      <div class="fd"><label>연월</label><input type="month" id="immgmt"></div>
-      <div class="fd"><label>항목명</label><input type="text" id="imname" placeholder="예: 관리비, 전기세" lang="ko"></div>
-      <div class="fd"><label>금액</label><input type="number" id="imamt" placeholder="0" inputmode="numeric"></div>
+      <div class="fd"><label>년도</label><input type="number" id="imyear" placeholder="예: 2026" inputmode="numeric"></div>
+      <div class="fd"><label>월 선택</label>
+        <select id="immonth">
+          <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option>
+          <option value="04">4월</option><option value="05">5월</option><option value="06">6월</option>
+          <option value="07">7월</option><option value="08">8월</option><option value="09">9월</option>
+          <option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+        </select>
+      </div>
+      <div class="fd"><label>항목명 (선택)</label><input type="text" id="imname" placeholder="예: 관리비, 전기세" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="text" id="imamt" placeholder="0" inputmode="numeric" oninput="fmtAmt(this)"></div>
     </div>
     <div id="gbk" style="display:none">
       <div class="fd"><label>연월</label><input type="month" id="imbk"></div>
       <div class="fd"><label>세무사명/항목</label><input type="text" id="ibname" placeholder="예: 홍세무사 기장비" lang="ko"></div>
-      <div class="fd"><label>금액</label><input type="number" id="ibamt" placeholder="0" inputmode="numeric"></div>
+      <div class="fd"><label>금액</label><input type="text" id="ibamt" placeholder="0" inputmode="numeric" oninput="fmtAmt(this)"></div>
     </div>
     <div id="gtax" style="display:none">
       <div class="fd"><label>납부일</label><input type="date" id="itdate"></div>
       <div class="fd"><label>국세 / 지방세</label><select id="itkind"><option value="국세">국세</option><option value="지방세">지방세</option></select></div>
       <div class="fd"><label>세목 (예: 종합소득세, 부가가치세)</label><input type="text" id="itname" placeholder="직접 입력" lang="ko"></div>
-      <div class="fd"><label>금액</label><input type="number" id="itamt" placeholder="0" inputmode="numeric"></div>
+      <div class="fd"><label>금액</label><input type="text" id="itamt" placeholder="0" inputmode="numeric" oninput="fmtAmt(this)"></div>
     </div>
     <div id="getc" style="display:none">
-      <div class="fd"><label>연월</label><input type="month" id="imetc"></div>
+      <div class="mr">
+        <div class="fd"><label>년</label><input type="number" id="ietcyear" placeholder="2026" inputmode="numeric"></div>
+        <div class="fd"><label>월</label>
+          <select id="ietcmonth">
+            <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option>
+            <option value="04">4월</option><option value="05">5월</option><option value="06">6월</option>
+            <option value="07">7월</option><option value="08">8월</option><option value="09">9월</option>
+            <option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+          </select>
+        </div>
+        <div class="fd"><label>일</label>
+          <select id="ietcday">
+            <option value="">선택</option>
+          </select>
+        </div>
+      </div>
       <div class="fd"><label>지출 구분 (예: 환불, 교재구입, 비품, 수수료)</label><input type="text" id="ietccat" placeholder="직접 입력" lang="ko"></div>
       <div class="fd"><label>내용 (상세 설명)</label><input type="text" id="ietcname" placeholder="예: 홍길동 수강료 환불" lang="ko"></div>
-      <div class="fd"><label>금액</label><input type="number" id="ietcamt" placeholder="0" inputmode="numeric"></div>
+      <div class="fd"><label>금액</label><input type="text" id="ietcamt" placeholder="0" inputmode="numeric" oninput="fmtAmt(this)"></div>
       <div class="fd"><label>메모 (선택)</label><input type="text" id="ietcmemo" placeholder="추가 메모" lang="ko"></div>
+    </div>
+    <div id="ggoo" style="display:none">
+      <div class="fd"><label>연월</label><input type="month" id="imgoo"></div>
+      <div class="fd"><label>항목</label>
+        <select id="igoosel" onchange="onGooSel()">
+          <option value="수강료">수강료</option>
+          <option value="교재비">교재비</option>
+          <option value="기타">기타 (직접입력)</option>
+        </select>
+      </div>
+      <div class="fd" id="igoo-custom" style="display:none"><label>항목명 직접 입력</label><input type="text" id="igooname" placeholder="입력" lang="ko"></div>
+      <div class="fd"><label>금액</label><input type="number" id="igooamt" placeholder="0" inputmode="numeric" oninput="fmtAmt(this)"></div>
+      <div id="igooamt-preview" style="font-size:13px;color:var(--bl);padding:4px 2px;display:none"></div>
     </div>
     <button class="sbtn2" onclick="doSave()">저장</button>
   </div>
@@ -218,6 +271,7 @@ input:focus,select:focus{outline:none;border-color:var(--bl);box-shadow:0 0 0 3p
     <button class="qb" style="font-size:11px;padding:6px 9px;background:var(--ppl);color:var(--pp);border:none" onclick="hf2('bk')">기장비</button>
     <button class="qb" style="font-size:11px;padding:6px 9px;background:var(--bll);color:var(--bl);border:none" onclick="hf2('tax')">세금</button>
     <button class="qb" style="font-size:11px;padding:6px 9px;background:#F3E5F5;color:#6A1B9A;border:none" onclick="hf2('etc')">기타지출</button>
+    <button class="qb" style="font-size:11px;padding:6px 9px;background:var(--gnl);color:var(--gn);border:none" onclick="hf2('goo')">구래점</button>
   </div>
   <div id="hlist"></div>
 </div>
@@ -391,6 +445,91 @@ function pg(id,msg){const e=document.getElementById(id);if(e){e.style.display='b
 function hpg(id,msg,ms=4000){const e=document.getElementById(id);if(e){e.textContent=msg||'';setTimeout(()=>{if(e)e.style.display='none'},ms)}}
 function uid(){return Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
 
+/* 금액 콤마 표시 */
+function fmtAmt(inp){
+  const v=parseFloat(inp.value)||0;
+  const pid=inp.id+'-preview';
+  const pel=document.getElementById(pid);
+  if(pel){
+    if(v>0){pel.style.display='block';pel.textContent='→ '+v.toLocaleString('ko-KR')+'원'}
+    else pel.style.display='none';
+  }
+}
+
+/* 수입 항목 선택 */
+function onIncSel(){
+  const v=document.getElementById('inamesel').value;
+  document.getElementById('iname-custom').style.display=v==='기타'?'block':'none';
+}
+
+/* 구래점 항목 선택 */
+function onGooSel(){
+  const v=document.getElementById('igoosel').value;
+  document.getElementById('igoo-custom').style.display=v==='기타'?'block':'none';
+}
+
+/* 기타지출 구분 선택 */
+document.addEventListener('DOMContentLoaded',function(){
+  const sel=document.getElementById('ietccat');
+  if(sel)sel.addEventListener('change',function(){
+    document.getElementById('ietccat-custom').style.display=this.value==='기타'?'block':'none';
+  });
+});
+
+/* 연도 셀렉트 초기화 */
+function initYearSel(){
+  const sel=document.getElementById('iryear');
+  if(!sel)return;
+  const y=new Date().getFullYear();
+  sel.innerHTML='';
+  for(let i=y-2;i<=y+1;i++){
+    const o=document.createElement('option');
+    o.value=i;o.textContent=i+'년';
+    if(i===y)o.selected=true;
+    sel.appendChild(o);
+  }
+  // 현재 월 기본 선택
+  const msel=document.getElementById('irmonth');
+  if(msel){const cm=(new Date().getMonth()+1).toString().padStart(2,'0');msel.value=cm}
+}
+
+// 금액 천단위 콤마 포맷
+function fmtAmt(el){
+  let v=el.value.replace(/[^0-9]/g,'');
+  if(v)el.value=Number(v).toLocaleString('ko-KR');
+  else el.value='';
+}
+// 포맷된 금액 → 숫자
+function parseAmt(id){
+  const v=document.getElementById(id)?.value||'';
+  return parseFloat(v.replace(/,/g,''))||0;
+}
+
+// 수입 항목 드롭다운 변경
+function onCatChange(){
+  const v=document.getElementById('icat').value;
+  document.getElementById('iname-wrap').style.display=v==='기타'?'block':'none';
+}
+
+// 일 드롭다운 채우기
+function fillDays(yearId,monthId,dayId){
+  const y=parseInt(document.getElementById(yearId)?.value)||new Date().getFullYear();
+  const m=parseInt(document.getElementById(monthId)?.value)||1;
+  const days=new Date(y,m,0).getDate();
+  const sel=document.getElementById(dayId);
+  if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">선택</option>'+
+    Array.from({length:days},(_,i)=>`<option value="${String(i+1).padStart(2,'0')}">${i+1}일</option>`).join('');
+  if(cur)sel.value=cur;
+}
+
+// 현재 KST 년도/월/일
+function kstParts(){
+  const k=new Date(Date.now()+9*3600000);
+  return{y:k.getUTCFullYear(),m:String(k.getUTCMonth()+1).padStart(2,'0'),d:String(k.getUTCDate()).padStart(2,'0')};
+}
+
 /* ═══════════ 탭 ═══════════ */
 function go(n,b){
   document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
@@ -405,7 +544,7 @@ function go(n,b){
 function stype(t,b){
   ctype=t;
   document.querySelectorAll('.tt').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-  ['inc','sal','rent','mgmt','bk','tax','etc'].forEach(x=>document.getElementById('g'+x).style.display=x===t?'block':'none');
+  ['inc','sal','rent','mgmt','bk','tax','etc','goo'].forEach(x=>document.getElementById('g'+x).style.display=x===t?'block':'none');
   document.getElementById('fac').style.display=t==='tax'?'none':'block';
 }
 
@@ -442,8 +581,9 @@ function doSave(){
 
   if(t==='inc'){
     const m=document.getElementById('iminc').value;
-    const n=document.getElementById('iname').value.trim();
-    const a=parseFloat(document.getElementById('iamt').value)||0;
+    const cat=document.getElementById('icat').value;
+    const n=cat==='기타'?document.getElementById('iname').value.trim():cat;
+    const a=parseAmt('iamt');
     if(!acid){toast('학원을 먼저 등록하세요');return}
     if(!m||!n||!a){toast('연월, 항목, 금액을 모두 입력하세요');return}
     Object.assign(row,{month:m,name:n,amount:a});
@@ -451,7 +591,7 @@ function doSave(){
   }else if(t==='sal'){
     const m=document.getElementById('imsal').value;
     const n=document.getElementById('isname').value.trim();
-    const a=parseFloat(document.getElementById('isamt').value)||0;
+    const a=parseAmt('isamt');
     const r=parseFloat(document.getElementById('israte').value)||3.3;
     if(!acid){toast('학원을 먼저 등록하세요');return}
     if(!m||!n||!a){toast('연월, 이름, 금액을 모두 입력하세요');return}
@@ -459,25 +599,29 @@ function doSave(){
     Object.assign(row,{month:m,name:n,amount:a,rate:r,taxAmt:tx,net:a-tx});
     document.getElementById('isname').value='';document.getElementById('isamt').value='';document.getElementById('spv').style.display='none';
   }else if(t==='rent'){
-    const m=document.getElementById('imrent').value;
+    const y=document.getElementById('iryear').value;
+    const mo=document.getElementById('irmonth').value;
+    const m=y&&mo?y+'-'+mo:'';
     const n=document.getElementById('irname').value.trim();
-    const a=parseFloat(document.getElementById('iramt').value)||0;
+    const a=parseAmt('iramt');
     if(!acid){toast('학원을 먼저 등록하세요');return}
-    if(!m||!a){toast('연월과 금액을 입력하세요');return}
-    Object.assign(row,{month:m,name:n||'월세',amount:a});
+    if(!y||!a){toast('년도와 금액을 입력하세요');return}
+    Object.assign(row,{month:m,name:n||mo+'월 월세',amount:a});
     document.getElementById('irname').value='';document.getElementById('iramt').value='';
   }else if(t==='mgmt'){
-    const m=document.getElementById('immgmt').value;
+    const y=document.getElementById('imyear').value;
+    const mo=document.getElementById('immonth').value;
+    const m=y&&mo?y+'-'+mo:'';
     const n=document.getElementById('imname').value.trim();
-    const a=parseFloat(document.getElementById('imamt').value)||0;
+    const a=parseAmt('imamt');
     if(!acid){toast('학원을 먼저 등록하세요');return}
-    if(!m||!a){toast('연월과 금액을 입력하세요');return}
-    Object.assign(row,{month:m,name:n||'관리비',amount:a});
+    if(!y||!a){toast('년도와 금액을 입력하세요');return}
+    Object.assign(row,{month:m,name:n||mo+'월 관리비',amount:a});
     document.getElementById('imname').value='';document.getElementById('imamt').value='';
   }else if(t==='bk'){
     const m=document.getElementById('imbk').value;
     const n=document.getElementById('ibname').value.trim();
-    const a=parseFloat(document.getElementById('ibamt').value)||0;
+    const a=parseAmt('ibamt');
     if(!acid){toast('학원을 먼저 등록하세요');return}
     if(!m||!a){toast('연월과 금액을 입력하세요');return}
     Object.assign(row,{month:m,name:n||'기장비',amount:a});
@@ -486,25 +630,42 @@ function doSave(){
     const dt=document.getElementById('itdate').value;
     const kd=document.getElementById('itkind').value;
     const n=document.getElementById('itname').value.trim();
-    const a=parseFloat(document.getElementById('itamt').value)||0;
+    const a=parseAmt('itamt');
     if(!dt||!n||!a){toast('날짜, 세목, 금액을 모두 입력하세요');return}
     Object.assign(row,{month:dt.slice(0,7),date:dt,kind:kd,name:n,amount:a,acId:'',acName:''});
     document.getElementById('itname').value='';document.getElementById('itamt').value='';
   }else if(t==='etc'){
-    const m=document.getElementById('imetc').value;
-    const acid=document.getElementById('iac').value;
+    const ey=document.getElementById('ietcyear').value;
+    const emo=document.getElementById('ietcmonth').value;
+    const ed=document.getElementById('ietcday').value;
+    const m=ey&&emo?ey+'-'+emo:'';
+    const dt=ey&&emo&&ed?ey+'-'+emo+'-'+ed:'';
     const cat=document.getElementById('ietccat').value.trim();
     const n=document.getElementById('ietcname').value.trim();
-    const a=parseFloat(document.getElementById('ietcamt').value)||0;
+    const a=parseAmt('ietcamt');
     const memo=document.getElementById('ietcmemo').value.trim();
     if(!acid){toast('학원을 먼저 등록하세요');return}
-    if(!m||!cat||!a){toast('연월, 지출구분, 금액을 입력하세요');return}
-    Object.assign(row,{month:m,acId:acid,acName:db.acs.find(a=>a.id===acid)?.name||'',name:n||cat,category:cat,memo,amount:a});
+    if(!ey||!cat||!a){toast('년도, 지출구분, 금액을 입력하세요');return}
+    Object.assign(row,{month:m,date:dt,acId:acid,acName:db.acs.find(x=>x.id===acid)?.name||'',name:n||cat,category:cat,memo,amount:a});
     document.getElementById('ietccat').value='';document.getElementById('ietcname').value='';
     document.getElementById('ietcamt').value='';document.getElementById('ietcmemo').value='';
   }
 
   db.rows.push(row);
+  }else if(t==='goo'){
+    const acid=document.getElementById('iac').value;
+    const m=document.getElementById('imgoo').value;
+    const gsel=document.getElementById('igoosel').value;
+    const n=gsel==='기타'?document.getElementById('igooname').value.trim():gsel;
+    const a=parseFloat(document.getElementById('igooamt').value)||0;
+    if(!acid){toast('학원을 먼저 등록하세요');return}
+    if(!m||!n||!a){toast('연월, 항목, 금액을 입력하세요');return}
+    Object.assign(row,{month:m,name:n,amount:a,branch:'구래점'});
+    document.getElementById('igooname').value='';document.getElementById('igooamt').value='';
+    document.getElementById('igoo-custom').style.display='none';
+    document.getElementById('igoosel').value='수강료';
+    document.getElementById('igooamt-preview').style.display='none';
+  }
   save();push();
   toast('저장되었습니다');
 }
@@ -515,17 +676,17 @@ function dash(){
   const t=document.getElementById('pt').value;
   const ok=r=>{const m=r.month||'';return(!f||m>=f)&&(!t||m<=t)};
   const sm=tp=>db.rows.filter(r=>r.type===tp&&ok(r)).reduce((s,r)=>s+(Number(r.amount)||0),0);
-  const inc=sm('inc'),sal=sm('sal'),rent=sm('rent'),mgmt=sm('mgmt'),bk=sm('bk'),tax=sm('tax'),etc=sm('etc');
-  const net=inc-sal-rent-mgmt-bk-tax-etc;
-  ['dinc','dsal','drent','dmgmt','dbk','dtax','detc'].forEach((id,i)=>{
-    document.getElementById(id).textContent=W([inc,sal,rent,mgmt,bk,tax,etc][i]);
+  const inc=sm('inc'),sal=sm('sal'),rent=sm('rent'),mgmt=sm('mgmt'),bk=sm('bk'),tax=sm('tax'),etc=sm('etc'),goo=sm('goo');
+  const net=inc+goo-sal-rent-mgmt-bk-tax-etc;
+  ['dinc','dsal','drent','dmgmt','dbk','dtax','detc','dgoo'].forEach((id,i)=>{
+    const el=document.getElementById(id);if(el)el.textContent=W([inc,sal,rent,mgmt,bk,tax,etc,goo][i]);
   });
   const ne=document.getElementById('dnet');ne.textContent=W(net);ne.style.color=net>=0?'var(--gn)':'var(--rd)';
   const el=document.getElementById('dacl');
   if(!db.acs.length){el.innerHTML='<div class="em">학원을 먼저 등록하세요</div>';return}
   el.innerHTML=db.acs.map(a=>{
     const fi=r=>r.acId===a.id&&ok(r);
-    const ai=db.rows.filter(r=>fi(r)&&r.type==='inc').reduce((s,r)=>s+(Number(r.amount)||0),0);
+    const ai=db.rows.filter(r=>fi(r)&&(r.type==='inc'||r.type==='goo')).reduce((s,r)=>s+(Number(r.amount)||0),0);
     const as=db.rows.filter(r=>fi(r)&&r.type==='sal').reduce((s,r)=>s+(Number(r.amount)||0),0);
     const ar=db.rows.filter(r=>fi(r)&&r.type==='rent').reduce((s,r)=>s+(Number(r.amount)||0),0);
     const am=db.rows.filter(r=>fi(r)&&r.type==='mgmt').reduce((s,r)=>s+(Number(r.amount)||0),0);
@@ -543,8 +704,8 @@ function rHist(){
   const rows=db.rows.filter(r=>(!f||r.month>=f)&&(!t||r.month<=t)&&(!hflt||r.type===hflt)).sort((a,b)=>b.ts-a.ts);
   const el=document.getElementById('hlist');
   if(!rows.length){el.innerHTML='<div class="em">내역이 없습니다</div>';return}
-  const lb={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금',etc:'기타지출'};
-  const tc={inc:'ti',sal:'ts',rent:'tr',mgmt:'tm',bk:'tb2',tax:'tx2',etc:'te'};
+  const lb={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금',etc:'기타지출',goo:'구래점'};
+  const tc={inc:'ti',sal:'ts',rent:'tr',mgmt:'tm',bk:'tb2',tax:'tx2',etc:'te',goo:'ti'};
   const gp={};rows.forEach(r=>{(gp[r.month]=gp[r.month]||[]).push(r)});
   el.innerHTML=Object.keys(gp).sort((a,b)=>b.localeCompare(a)).map(m=>{
     const its=gp[m].map(r=>`<div class="li">
@@ -570,7 +731,7 @@ function rByac(){
     db.acs.map(a=>`<button class="at ${bacid===a.id?'on':''}" onclick="sBAc('${a.id}')">${a.name}</button>`).join('');
   const el=document.getElementById('acont');
   if(!db.acs.length){el.innerHTML='<div class="em">학원을 먼저 등록하세요</div>';return}
-  const lb={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금',etc:'기타지출'};
+  const lb={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금',etc:'기타지출',goo:'구래점'};
   const etypes=['sal','rent','mgmt','bk','etc'];
   if(bacid==='all'){
     const rs=db.rows.filter(ok);
@@ -640,7 +801,7 @@ function rChips(){
 function openEM(id){
   const r=db.rows.find(x=>x.id===id);if(!r)return;
   eid=id;
-  const lb={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금',etc:'기타지출'};
+  const lb={inc:'수입',sal:'급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금',etc:'기타지출',goo:'구래점'};
   ['inc','sal','rent','mgmt','bk','tax','etc'].forEach(t=>document.getElementById('em-'+t).style.display=t===r.type?'block':'none');
   document.getElementById('emtitle').textContent=lb[r.type]+' 수정';
   if(r.type==='inc'){fillSel('em-ac-inc');document.getElementById('em-minc').value=r.month||'';document.getElementById('em-ac-inc').value=r.acId||'';document.getElementById('em-iname').value=r.name||'';document.getElementById('em-iamt').value=r.amount||''}
@@ -673,10 +834,10 @@ function dlCSV(){
   const f=document.getElementById('dlf').value,t=document.getElementById('dlt').value;
   const rows=db.rows.filter(r=>(!f||r.month>=f)&&(!t||r.month<=t)).sort((a,b)=>(a.month||'').localeCompare(b.month||''));
   if(!rows.length){toast('해당 기간 내역 없음');return}
-  const lb={inc:'수입',sal:'강사급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금납부',etc:'기타지출'};
+  const lb={inc:'수입',sal:'강사급여',rent:'월세',mgmt:'관리비',bk:'기장비',tax:'세금납부',etc:'기타지출',goo:'구래점수입'};
   const lines=[['연월','학원','구분','항목','금액','공제세액','실지급','세목','납부일'].join(',')];
   rows.forEach(r=>lines.push([r.month,r.acName||'',lb[r.type]||r.type,r.name||'',r.amount||0,r.taxAmt||'',r.net||'',r.kind||'',r.date||''].map(v=>`"${v}"`).join(',')));
-  const sm={inc:0,sal:0,rent:0,mgmt:0,bk:0,tax:0,etc:0};
+  const sm={inc:0,sal:0,rent:0,mgmt:0,bk:0,tax:0,etc:0,goo:0};
   rows.forEach(r=>{if(sm[r.type]!==undefined)sm[r.type]+=(Number(r.amount)||0)});
   lines.push('');lines.push(`"합계","총수입:${sm.inc}","총급여:${sm.sal}","총월세:${sm.rent}","총관리비:${sm.mgmt}","총기장비:${sm.bk}","총세금:${sm.tax}","순이익:${sm.inc-sm.sal-sm.rent-sm.mgmt-sm.bk-sm.tax}"`);
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8'}));a.download=`학원재정_${f||'전체'}_${t||''}.csv`;a.click();toast('CSV 다운로드 완료');
@@ -777,11 +938,20 @@ function rAll(){
 function init(){
   load();
   const m=kstYM(),d=kstD();
-  ['pf','pt','hf','ht','bf','bt','iminc','imsal','imrent','immgmt','imbk'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=m});
+  ['pf','pt','hf','ht','bf','bt','iminc','imsal','imbk'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=m});
+  // 월세·관리비·기타지출 년도/월 초기값
+  const kp=kstParts();
+  ['iryear','imyear','ietcyear'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=kp.y});
+  ['irmonth','immonth','ietcmonth'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=kp.m});
+  fillDays('ietcyear','ietcmonth','ietcday');
+  document.getElementById('ietcmonth')?.addEventListener('change',()=>fillDays('ietcyear','ietcmonth','ietcday'));
+  document.getElementById('ietcyear')?.addEventListener('change',()=>fillDays('ietcyear','ietcmonth','ietcday'));
   document.getElementById('itdate').value=d;
   document.getElementById('dlf').value=m;document.getElementById('dlt').value=m;
   // 기본 학원 없으면 추가 안 함 (사용자가 직접 등록)
   rAcSel();rChips();dash();setC(!!db.url);
+  initYearSel();
+  document.getElementById('ietcdate').value=kstD();
   // 앱 시작 시 자동 pull
   if(db.url){
     setSL('불러오는 중...');
